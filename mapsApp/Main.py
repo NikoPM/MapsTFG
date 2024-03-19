@@ -6,12 +6,13 @@ from PyQt5.QtCore import QUrl
 import os
 import tempfile
 
+#Clase de la ventana principal
 class MapWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('Mapa Interactivo con Controles')
-        self.initUI()
-        self.show()
+        self.setWindowTitle('Mapa Interactivo con Controles')  # Titulo de la ventana
+        self.initUI()   # Método con los parámetros de la ventana
+        self.show()  # Método para abrir la ventana
 
     def initUI(self):
         # Tamaño inicial de la ventana
@@ -43,11 +44,42 @@ class MapWindow(QMainWindow):
         # Añade el mapa al layout del mapa
         map_layout.addWidget(self.web_view)
 
+        # Textboxes y ComboBox
+        self.txt_iteraciones = QLineEdit('n_iteraciones')
+        self.txt_timesteps = QLineEdit('n_timesteps')
+        self.txt_modeldir_train = QLineEdit('model_dir')
+        self.txt_modeldir_load_model = QLineEdit('model_dir')
+        self.txt_logdir = QLineEdit('log_dir')
+        self.txt_modelname_train = QLineEdit('model_name')
+        self.txt_modelname_load_model = QLineEdit('model_name')
+        self.txt_episodes = QLineEdit('episodes')
+        self.combo_options = QComboBox()
+        self.combo_options.addItem("Seleccione el algoritmo")
+        self.combo_options.addItems(["PPO", "A2C", "DQN"])  # ComboBox con los algoritmos disponibles
+
         # Botones
         self.btn_load_case = QPushButton('Cargar Caso')
         self.btn_save_case = QPushButton('Guardar Caso')
-        self.btn_load_case.clicked.connect(self.load_case)
-        self.btn_save_case.clicked.connect(self.save_case)
+        self.btn_load_case.clicked.connect(self.load_case)  # Conecta con el método load_case
+        self.btn_save_case.clicked.connect(self.save_case)  # Conecta con el método save_case
+        self.btn_train = QPushButton('Entrenar desde 0')
+        self.btn_load_model = QPushButton('Cargar Modelo')
+        self.btn_train.clicked.connect(lambda: self.train(self.txt_iteraciones.text(), self.txt_timesteps.text(),self.txt_modeldir_train.text(), self.txt_logdir.text(), self.txt_modelname_train.text()))
+        self.btn_load_model.clicked.connect(lambda: self.load_model(self.txt_modeldir_load_model.text(), self.txt_modelname_load_model.text(), self.txt_episodes.text()))
+
+        
+        # Añade los controles al layout de controles
+        controls_layout.addWidget(self.combo_options)
+        controls_layout.addWidget(self.btn_train)
+        controls_layout.addWidget(self.txt_iteraciones)
+        controls_layout.addWidget(self.txt_timesteps)
+        controls_layout.addWidget(self.txt_modeldir_train)
+        controls_layout.addWidget(self.txt_logdir)
+        controls_layout.addWidget(self.txt_modelname_train)
+        controls_layout.addWidget(self.btn_load_model)
+        controls_layout.addWidget(self.txt_modeldir_load_model)
+        controls_layout.addWidget(self.txt_modelname_load_model)
+        controls_layout.addWidget(self.txt_episodes)
 
         # Añade los botones al layout del mapa
         map_buttons_layout = QHBoxLayout()
@@ -55,16 +87,7 @@ class MapWindow(QMainWindow):
         map_buttons_layout.addWidget(self.btn_save_case)
         map_layout.addLayout(map_buttons_layout)
 
-        # Textboxes y ComboBox
-        self.txt_input1 = QLineEdit()
-        self.txt_input2 = QLineEdit()
-        self.combo_options = QComboBox()
-        self.combo_options.addItems(["PPO", "A2C", "DQN"])  # Actualiza las opciones aquí
 
-        # Añade los controles al layout de controles
-        controls_layout.addWidget(self.txt_input1)
-        controls_layout.addWidget(self.txt_input2)
-        controls_layout.addWidget(self.combo_options)
 
         # Añade los layouts de mapa y controles al layout principal
         main_layout.addLayout(map_layout, 3)
@@ -75,6 +98,7 @@ class MapWindow(QMainWindow):
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
 
+    #Funciones de los botones
     def load_case(self):
         # Lógica para cargar un caso
         print("Cargar caso")
@@ -82,6 +106,17 @@ class MapWindow(QMainWindow):
     def save_case(self):
         # Lógica para guardar un caso
         print("Guardar caso")
+
+    def train(self, iteraciones, timesteps, modeldir, logdir, modelname):
+        # Aquí va tu lógica para entrenar el modelo usando los argumentos proporcionados
+        print(iteraciones, timesteps, modeldir, logdir, modelname)
+
+    def load_model(self, modeldir, modelname, episodes):
+        # Lógica para cargar el modelo
+        print(modeldir, modelname, episodes)
+
+
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
