@@ -11,10 +11,10 @@ import tempfile
 class MapWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('TFG Nicolás')  # Titulo de la ventana
-        self.initUI()   # Método con los parámetros de la ventana
+        self.setWindowTitle('TFG Nicolás')  # Titulo de la ventana      
         self.show()  # Método para abrir la ventana
-
+        self.vehicles_tab = VehicleWindow()
+        self.initUI()   # Método con los parámetros de la ventana
  
 
     def initUI(self):
@@ -33,11 +33,11 @@ class MapWindow(QMainWindow):
         self.setupMainTab(main_tab)
 
         # Instancia de la ventana secundaria para la segunda pestaña
-        vehicles_tab = VehicleWindow()
+        
 
         # Añade las pestañas al QTabWidget
         self.tab_widget.addTab(main_tab, "Mapa")
-        self.tab_widget.addTab(vehicles_tab, "Vehículos")
+        self.tab_widget.addTab(self.vehicles_tab, "Vehículos")
 
     def setupMainTab(self, tab):
 
@@ -120,6 +120,8 @@ class MapWindow(QMainWindow):
     def load_case(self):
         # Lógica para cargar un caso
         print("Cargar caso")
+        self.vehicles_tab.load_data_from_csv('mapsApp/vehicles.csv')
+
 
     def save_case(self):
         # Lógica para guardar un caso
