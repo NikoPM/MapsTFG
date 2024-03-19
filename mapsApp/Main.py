@@ -1,6 +1,7 @@
 import sys
 import folium
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QPushButton, QWidget, QLineEdit, QComboBox
+from VehiclesWindow import VehicleWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QPushButton, QWidget, QLineEdit, QComboBox, QTabWidget
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import QUrl
 import os
@@ -10,9 +11,11 @@ import tempfile
 class MapWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('Mapa Interactivo con Controles')  # Titulo de la ventana
+        self.setWindowTitle('TFG Nicolás')  # Titulo de la ventana
         self.initUI()   # Método con los parámetros de la ventana
         self.show()  # Método para abrir la ventana
+
+ 
 
     def initUI(self):
         # Tamaño inicial de la ventana
@@ -21,6 +24,23 @@ class MapWindow(QMainWindow):
         # Tamaño mínimo de la ventana
         self.setMinimumSize(800, 450)  # Ancho por Alto en píxeles
 
+        # Crea el QTabWidget y lo establece como el widget central de la ventana principal
+        self.tab_widget = QTabWidget()
+        self.setCentralWidget(self.tab_widget)
+
+        # Crea el contenido para la primera pestaña
+        main_tab = QWidget()
+        self.setupMainTab(main_tab)
+
+        # Instancia de la ventana secundaria para la segunda pestaña
+        vehicles_tab = VehicleWindow()
+
+        # Añade las pestañas al QTabWidget
+        self.tab_widget.addTab(main_tab, "Mapa")
+        self.tab_widget.addTab(vehicles_tab, "Vehículos")
+
+    def setupMainTab(self, tab):
+
         # Layout para el mapa y botones
         map_layout = QVBoxLayout()
 
@@ -28,7 +48,7 @@ class MapWindow(QMainWindow):
         controls_layout = QVBoxLayout()
 
         # Layout principal que incluye tanto el mapa como los controles
-        main_layout = QHBoxLayout()
+        main_layout = QHBoxLayout(tab)
 
         # Crear un mapa usando Folium apuntando a Bilbao
         self.map = folium.Map(location=[43.2630, -2.9350], zoom_start=12)  # Coordenadas de Bilbao, España
@@ -94,9 +114,7 @@ class MapWindow(QMainWindow):
         main_layout.addLayout(controls_layout, 1)
 
         # Widget central para contener el layout principal
-        central_widget = QWidget()
-        central_widget.setLayout(main_layout)
-        self.setCentralWidget(central_widget)
+
 
     #Funciones de los botones
     def load_case(self):
