@@ -13,7 +13,6 @@ class VehicleWindow(QWidget):
     def initUI(self):
         self.setWindowTitle('Vehículos')
         self.resize(800, 600)  # Tamaño de la ventana
-        self.setStyleSheet("background-color: green;")  # Fondo verde
 
         # Crea el StackedWidget
         self.stackedWidget = QStackedWidget()
@@ -54,8 +53,8 @@ class VehicleWindow(QWidget):
         # Layout para los botones, inicialmente ocultos
         self.buttonsLayout = QHBoxLayout()
         self.buttonsLayout.addWidget(self.btnAddRow)
-        self.buttonsLayout.addWidget(self.btnAddVehicle)
         self.buttonsLayout.addWidget(self.btnDeleteVehicle)
+        self.buttonsLayout.addWidget(self.btnAddVehicle)
         layout.addLayout(self.buttonsLayout)
 
         # Inicialmente muestra el mensaje, oculta los botones
@@ -66,7 +65,7 @@ class VehicleWindow(QWidget):
         self.setLayout(layout)
 
     def set_buttons_visibility(self, visible):
-        """Controla la visibilidad de los botones."""
+        #Controla la visibilidad de los botones
         self.btnAddVehicle.setVisible(visible)
         self.btnDeleteVehicle.setVisible(visible)
         self.btnAddRow.setVisible(visible)
@@ -98,6 +97,7 @@ class VehicleWindow(QWidget):
 
 
     def add_empty_row(self):
+        # Añade una nueva fila vacía a la tabla
         row_count = self.table.rowCount()
         self.table.insertRow(row_count)
 
@@ -163,8 +163,6 @@ class VehicleWindow(QWidget):
             if item:
                 item.setText(str(row + 1))  # Actualiza el índice basado en la nueva posición de la fila
 
-        # Guarda la tabla actualizada en el archivo .csv
-        self.save_table_to_csv('mapsApp/vehicles.csv')
 
 
     def save_table_to_csv(self, filepath):

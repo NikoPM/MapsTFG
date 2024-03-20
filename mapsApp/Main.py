@@ -11,6 +11,7 @@ import tempfile
 class MapWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        
         self.setWindowTitle('TFG Nicolás')  # Titulo de la ventana      
         self.show()  # Método para abrir la ventana
         self.vehicles_tab = VehicleWindow()
@@ -18,6 +19,7 @@ class MapWindow(QMainWindow):
  
 
     def initUI(self):
+        
         # Tamaño inicial de la ventana
         self.resize(1000, 600)  # Ancho por Alto en píxeles
         
@@ -42,8 +44,9 @@ class MapWindow(QMainWindow):
     def setupMainTab(self, tab):
 
         # Layout para el mapa y botones
-        map_layout = QVBoxLayout()
-
+        contenedor = QWidget()
+        map_layout = QVBoxLayout(contenedor)
+        
         # Layout para los controles de entrada
         controls_layout = QVBoxLayout()
 
@@ -74,6 +77,7 @@ class MapWindow(QMainWindow):
         self.txt_modelname_load_model = QLineEdit('model_name')
         self.txt_episodes = QLineEdit('episodes')
         self.combo_options = QComboBox()
+        self.combo_options.setStyleSheet("QComboBox { background-color: white; font-size: 12px; }")
         self.combo_options.addItem("Seleccione el algoritmo")
         self.combo_options.addItems(["PPO", "A2C", "DQN"])  # ComboBox con los algoritmos disponibles
 
@@ -86,6 +90,9 @@ class MapWindow(QMainWindow):
         self.btn_load_model = QPushButton('Cargar Modelo')
         self.btn_train.clicked.connect(lambda: self.train(self.txt_iteraciones.text(), self.txt_timesteps.text(),self.txt_modeldir_train.text(), self.txt_logdir.text(), self.txt_modelname_train.text()))
         self.btn_load_model.clicked.connect(lambda: self.load_model(self.txt_modeldir_load_model.text(), self.txt_modelname_load_model.text(), self.txt_episodes.text()))
+
+        # Formato
+        self.txt_iteraciones
 
         
         # Añade los controles al layout de controles
@@ -110,6 +117,7 @@ class MapWindow(QMainWindow):
 
 
         # Añade los layouts de mapa y controles al layout principal
+        main_layout.addWidget(contenedor)
         main_layout.addLayout(map_layout, 3)
         main_layout.addLayout(controls_layout, 1)
 
@@ -140,5 +148,11 @@ class MapWindow(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+
+    # Carga la hoja de estilo
+    with open("mapsApp/style.qss", "r") as f:
+        _style = f.read()
+        app.setStyleSheet(_style)
+
     window = MapWindow()
     sys.exit(app.exec_())
