@@ -1,8 +1,13 @@
-from PyQt5.QtWidgets import QMessageBox, QDialog, QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QStackedWidget
+import folium
+import tempfile
+import os
+from PyQt5.QtWidgets import QFrame, QFileDialog, QMessageBox, QDialog, QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QStackedWidget
 from PyQt5.QtGui import QColor
-from PyQt5.QtCore import Qt
+from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtCore import QUrl, Qt
 from InputDialog import InputDialog
 import csv
+
 
 class VehicleWindow(QWidget):
     def __init__(self):
@@ -11,89 +16,135 @@ class VehicleWindow(QWidget):
         
 
     def initUI(self):
-        self.setWindowTitle('Vehículos')
-        self.resize(800, 600)  # Tamaño de la ventana
+        self.layout = QHBoxLayout(self)
+        # Contenedor para el mapa y el botón "Cargar Caso"
+        mapContainer = QWidget()
+        mapLayout = QVBoxLayout()  # QVBoxLayout para organizar el mapa y el botón verticalmente
 
-        # Crea el StackedWidget
-        self.stackedWidget = QStackedWidget()
+        # Configuración del mapa
+        self.setupMap()
+        mapLayout.addWidget(self.web_view)  # Añade el mapa al QVBoxLayout
+
+        # Crea el botón "Cargar Caso" y lo añade debajo del mapa
+        loadCaseButton = QPushButton("Cargar Caso")
+        loadCaseButton.clicked.connect(self.load_case)  # Conecta el botón a la función load_case
+        mapLayout.addWidget(loadCaseButton)
+
+        mapContainer.setLayout(mapLayout)  # Establece el QVBoxLayout como el layout del contenedor del mapa
+        self.layout.addWidget(mapContainer, 1)
+        # QStackedWidget para alternar entre el mensaje y las tablas
+        self.tablesStack = QStackedWidget()
+
+
+        # Widget para el mensaje de "no hay datos"
+        noDataWidget = QWidget()
+        noDataLayout = QVBoxLayout(noDataWidget)
+        noDataMessage = QLabel("No se ha cargado ningún caso.")
+        noDataMessage.setAlignment(Qt.AlignCenter)
+        noDataLayout.addWidget(noDataMessage)
+        self.tablesStack.addWidget(noDataWidget)
+
+
+        # Configura y añade las tablas y botones al QStackedWidget
+        self.tablesStack.addWidget(self.setupTablesAndButtons())
+        self.layout.addWidget(self.tablesStack, 2)
+    
+    def setupMap(self):
+        # Crear un mapa usando Folium apuntando a Bilbao
+        self.map = folium.Map(location=[43.2630, -2.9350], zoom_start=12)
+        tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.html')
+        self.map.save(tmp_file.name)
         
-        # Crea y configura el widget de mensaje
-        self.messageWidget = QWidget()
-        self.messageLayout = QVBoxLayout(self.messageWidget)
-        self.lblMessage = QLabel("No se ha cargado el archivo")
-        self.lblMessage.setAlignment(Qt.AlignCenter)
-        self.messageLayout.addWidget(self.lblMessage)
-        self.stackedWidget.addWidget(self.messageWidget)
-
-        # Crea y configura el widget de la tabla
-        self.tableWidget = QWidget()
-        self.tableLayout = QVBoxLayout(self.tableWidget)
-        self.table = QTableWidget()
-        self.table.setStyleSheet("background-color: white;")  # Establece el fondo de la tabla en blanco
-        self.tableLayout.addWidget(self.table)
-        # Añade el widget de la tabla al StackedWidget
-        self.stackedWidget.addWidget(self.tableWidget)
-
-        # Crea botones
-        self.btnAddVehicle = QPushButton('Guardar tabla')
-        self.btnDeleteVehicle = QPushButton('Eliminar vehículo')
-        self.btnAddVehicle.setStyleSheet("font-size: 20px;")  # Tamaño grande
-        self.btnDeleteVehicle.setStyleSheet("font-size: 20px;")  # Tamaño grande
-        self.btnAddRow = QPushButton('Añadir Fila Vacía')
-        self.btnAddRow.setStyleSheet("font-size: 20px;")
-        self.btnAddVehicle.clicked.connect(self.add_vehicle)
-        self.btnAddRow.clicked.connect(self.add_empty_row)
-        self.btnDeleteVehicle.clicked.connect(self.delete_selected_vehicle)
+        # Crea un QWebEngineView como contenedor del mapa de Folium
+        self.web_view = QWebEngineView()
+        self.web_view.load(QUrl.fromLocalFile(tmp_file.name))
 
 
-        # Configura el layout principal
-        layout = QVBoxLayout()
-        layout.addWidget(self.stackedWidget)
+    def setupTablesAndButtons(self):
+        tablesWidget = QWidget()
+        tablesLayout = QVBoxLayout(tablesWidget)
+        # Configuración de la primera tabla y sus botones
+        self.table1 = QTableWidget()
+        self.table1.setStyleSheet("background-color: white;")
+        btn_add1 = QPushButton('+')
+        btn_remove1 = QPushButton('-')
+        btn_save1 = QPushButton('Guardar')
+        #btn_save1.clicked.connect(lambda: self.saveTableData(self.table1, 'table1.csv'))
         
-        # Layout para los botones, inicialmente ocultos
-        self.buttonsLayout = QHBoxLayout()
-        self.buttonsLayout.addWidget(self.btnAddRow)
-        self.buttonsLayout.addWidget(self.btnDeleteVehicle)
-        self.buttonsLayout.addWidget(self.btnAddVehicle)
-        layout.addLayout(self.buttonsLayout)
+        table1_buttons_layout = QHBoxLayout()
+        table1_buttons_layout.addWidget(btn_add1)
+        table1_buttons_layout.addWidget(btn_remove1)
+        table1_buttons_layout.addWidget(btn_save1)
 
-        # Inicialmente muestra el mensaje, oculta los botones
-        self.stackedWidget.setCurrentWidget(self.messageWidget)
-        self.buttonsLayout.setAlignment(Qt.AlignCenter)  # Centra los botones
-        self.set_buttons_visibility(False)  # Oculta los botones
+        # Agrega la tabla y los botones al layout específico de la primera tabla
+        table1_layout = QVBoxLayout()
+        table1_layout.addWidget(self.table1)
+        table1_layout.addLayout(table1_buttons_layout)
+
+        # Configuración de la segunda tabla y sus botones
+        self.table2 = QTableWidget() 
+        self.table2.setStyleSheet("background-color: white;")
+        btn_add2 = QPushButton('+')
+        btn_remove2 = QPushButton('-')
+        btn_save2 = QPushButton('Guardar')
+        #btn_save2.clicked.connect(lambda: self.saveTableData(self.table2, 'table2.csv'))
         
-        self.setLayout(layout)
+        table2_buttons_layout = QHBoxLayout()
+        table2_buttons_layout.addWidget(btn_add2)
+        table2_buttons_layout.addWidget(btn_remove2)
+        table2_buttons_layout.addWidget(btn_save2)
 
-    def set_buttons_visibility(self, visible):
-        #Controla la visibilidad de los botones
-        self.btnAddVehicle.setVisible(visible)
-        self.btnDeleteVehicle.setVisible(visible)
-        self.btnAddRow.setVisible(visible)
+        # Agrega la tabla y los botones al layout específico de la segunda tabla
+        table2_layout = QVBoxLayout()
+        table2_layout.addWidget(self.table2)
+        table2_layout.addLayout(table2_buttons_layout)
 
-    def load_data_from_csv(self, filepath):
-        try:
-            with open(filepath, newline='', encoding='utf-8') as csvfile:
-                reader = csv.reader(csvfile)
-                headers = next(reader)  # Obtiene los encabezados
+        # Añade los layouts de las tablas al layout contenedor pasado como parámetro
+        tablesLayout.addLayout(table1_layout)
+        tablesLayout.addLayout(table2_layout)
+        return tablesWidget
 
-                # Limpia la tabla antes de cargar nuevos datos
-                self.table.clear()  # Limpia los datos de la tabla pero no los encabezados
-                self.table.setRowCount(0)  # Resetea el conteo de filas a 0
-                self.table.setColumnCount(len(headers))  # Ajusta el número de columnas basado en los encabezados
-                self.table.setHorizontalHeaderLabels(headers)  # Reestablece los encabezados de las columnas
-                self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
-                for row_data in reader:
-                    row = self.table.rowCount()
-                    self.table.insertRow(row)
-                    for column, data in enumerate(row_data):
-                        self.table.setItem(row, column, QTableWidgetItem(data))
 
-                # Datos cargados, cambia la vista a la tabla y muestra los botones
-                self.stackedWidget.setCurrentWidget(self.tableWidget)
-                self.set_buttons_visibility(True)
-        except FileNotFoundError:
-            print("Archivo no encontrado.")
+
+    def load_data_from_csv(self, folder_path):
+        csv_files = [f for f in os.listdir(folder_path) if f.endswith('.csv')]
+        print(folder_path)
+        print(csv_files)
+    
+        # Asegúrate de que hay al menos dos archivos .csv para cargar
+        if len(csv_files) < 2:
+            print("No se encontraron suficientes archivos .csv en la carpeta.")
+            return
+        
+        else:
+        
+            # Carga los datos de los dos primeros archivos .csv en las tablas
+            for i, file_name in enumerate(csv_files[:2]):
+                print(i)
+                file_path = os.path.join(folder_path, file_name)
+                with open(file_path, newline='', encoding='utf-8') as csvfile:
+                    reader = csv.reader(csvfile)
+                    table = self.table1 if i == 0 else self.table2  # Determina en qué tabla cargar los datos
+                    
+                    # Limpia la tabla antes de cargar nuevos datos
+                    table.setRowCount(0)
+                    table.setColumnCount(0)
+                    
+                    for row_index, row in enumerate(reader):
+                        if row_index == 0:
+                            # Configura los encabezados de columna en la primera fila
+                            table.setColumnCount(len(row))
+                            table.setHorizontalHeaderLabels(row)
+                        else:
+                            # Añade los datos a la tabla
+                            table.insertRow(table.rowCount())
+                            for column_index, cell in enumerate(row):
+                                table.setItem(table.rowCount() - 1, column_index, QTableWidgetItem(cell))
+                                
+                    # Cambia a mostrar la tabla y sus botones una vez cargados los datos
+                self.tablesStack.setCurrentIndex(1)
+
 
 
     def add_empty_row(self):
@@ -125,7 +176,7 @@ class VehicleWindow(QWidget):
                 headers = [self.table.horizontalHeaderItem(i).text() for i in range(self.table.columnCount())]
                 writer.writerow(headers)
                 
-                self.save_table_to_csv('mapsApp/vehicles.csv')
+                self.save_table_to_csv()
         
     def show_warning(self):
         msgBox = QMessageBox()
@@ -165,17 +216,39 @@ class VehicleWindow(QWidget):
 
 
 
-    def save_table_to_csv(self, filepath):
-        with open(filepath, 'w', newline='', encoding='utf-8') as csvfile:
-            writer = csv.writer(csvfile)
-            # Escribe los encabezados
-            headers = [self.table.horizontalHeaderItem(i).text() for i in range(self.table.columnCount())]
-            writer.writerow(headers)
+    def save_table_to_csv(self):
+
+        # Abre el cuadro de diálogo para guardar el archivo
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getSaveFileName(self, "Guardar como", "", "CSV Files (*.csv)", options=options)
+        
+        # Verifica si el usuario seleccionó un archivo
+        if fileName:
+            if not fileName.endswith('.csv'):
+                fileName += '.csv'  # Asegura que el archivo tenga la extensión .csv
+            with open(fileName, 'w', newline='', encoding='utf-8') as csvfile:
+                writer = csv.writer(csvfile)
+                # Escribe los encabezados
+                headers = [self.table.horizontalHeaderItem(i).text() for i in range(self.table.columnCount())]
+                writer.writerow(headers)
+                
+                # Escribe los datos de cada fila
+                for row in range(self.table.rowCount()):
+                    row_data = []
+                    for column in range(self.table.columnCount()):
+                        item = self.table.item(row, column)
+                        row_data.append(item.text() if item else "")
+                    writer.writerow(row_data)
+    def load_case(self):
+        # Convertir la ruta inicial relativa a una absoluta
+            # Si estás dentro de una clase y __file__ no está disponible, necesitarás establecer 'basePath' de otra manera
+            initialPath = os.path.join("mapsApp/Cases")
             
-            # Escribe los datos de cada fila
-            for row in range(self.table.rowCount()):
-                row_data = []
-                for column in range(self.table.columnCount()):
-                    item = self.table.item(row, column)
-                    row_data.append(item.text() if item else "")
-                writer.writerow(row_data)
+            # Abre el cuadro de diálogo para seleccionar una carpeta
+            options = QFileDialog.Options()
+            options |= QFileDialog.DontUseNativeDialog
+            folderPath = QFileDialog.getExistingDirectory(self, "Seleccionar Carpeta de Casos", initialPath, options=options)
+            # Verifica si el usuario seleccionó una carpeta
+            if folderPath:
+                self.load_data_from_csv(folderPath)

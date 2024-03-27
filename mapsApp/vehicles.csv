@@ -1,7 +1,1 @@
-index,initialPosition,maxCapacity,speed
-1,0,100,70.0
-2,0,100,70.0
-3,0,100,70.0
-4,0,100,70.0
-5,0,100,70.0
-6,0,100,70.0
+initialPosition,maxCapacity,speed

@@ -1,7 +1,7 @@
 import sys
 import folium
 from VehiclesWindow import VehicleWindow
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QPushButton, QWidget, QLineEdit, QComboBox, QTabWidget
+from PyQt5.QtWidgets import QFileDialog, QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QPushButton, QWidget, QLineEdit, QComboBox, QTabWidget
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import QUrl
 import os
@@ -83,9 +83,7 @@ class MapWindow(QMainWindow):
 
         # Botones
         self.btn_load_case = QPushButton('Cargar Caso')
-        self.btn_save_case = QPushButton('Guardar Caso')
-        self.btn_load_case.clicked.connect(self.load_case)  # Conecta con el método load_case
-        self.btn_save_case.clicked.connect(self.save_case)  # Conecta con el método save_case
+        self.btn_load_case.clicked.connect(self.vehicles_tab.load_case)  # Conecta con el método load_case
         self.btn_train = QPushButton('Entrenar desde 0')
         self.btn_load_model = QPushButton('Cargar Modelo')
         self.btn_train.clicked.connect(lambda: self.train(self.txt_iteraciones.text(), self.txt_timesteps.text(),self.txt_modeldir_train.text(), self.txt_logdir.text(), self.txt_modelname_train.text()))
@@ -111,7 +109,6 @@ class MapWindow(QMainWindow):
         # Añade los botones al layout del mapa
         map_buttons_layout = QHBoxLayout()
         map_buttons_layout.addWidget(self.btn_load_case)
-        map_buttons_layout.addWidget(self.btn_save_case)
         map_layout.addLayout(map_buttons_layout)
 
 
@@ -125,15 +122,7 @@ class MapWindow(QMainWindow):
 
 
     #Funciones de los botones
-    def load_case(self):
-        # Lógica para cargar un caso
-        print("Cargar caso")
-        self.vehicles_tab.load_data_from_csv('mapsApp/vehicles.csv')
-
-
-    def save_case(self):
-        # Lógica para guardar un caso
-        print("Guardar caso")
+    
 
     def train(self, iteraciones, timesteps, modeldir, logdir, modelname):
         # Aquí va tu lógica para entrenar el modelo usando los argumentos proporcionados
