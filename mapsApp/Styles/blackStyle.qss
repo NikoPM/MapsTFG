@@ -1,0 +1,123 @@
+QWidget {
+    background-color: #323232;
+    color: #ffffff;
+}
+
+QLabel, QCheckBox, QRadioButton, QGroupBox {
+    color: #ffffff;
+}
+
+QPushButton {
+    background-color: #505050;
+    color: #ffffff;
+    border: 1px solid #5e5e5e;
+    padding: 5px;
+}
+
+QPushButton:hover {
+    background-color: #626262;
+}
+
+QPushButton:pressed {
+    background-color: #787878;
+}
+
+QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QDoubleSpinBox, QComboBox {
+    background-color: #505050;
+    color: #ffffff;
+    border: 1px solid #5e5e5e;
+}
+
+QHeaderView::section {
+    background-color: #505050;
+    color: #ffffff;
+    padding-left: 4px;
+    border: 1px solid #6c6c6c;
+}
+
+QTableWidget {
+    gridline-color: #6c6c6c;
+}
+
+QTableWidget QTableCornerButton::section {
+    background-color: #505050;
+}
+
+QScrollBar:vertical, QScrollBar:horizontal {
+    border: 2px solid #323232;
+    background: #505050;
+}
+
+QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
+    background: #787878;
+    min-height: 20px;
+    min-width: 20px;
+}
+
+QScrollBar::add-line, QScrollBar::sub-line {
+    background: #505050;
+}
+
+QTabWidget::pane {
+    border: 1px solid #505050;
+}
+
+QTabBar::tab {
+    background: #505050;
+    color: #ffffff;
+}
+
+QTabBar::tab:selected, QTabBar::tab:hover {
+    background: #626262;
+}
+
+QMenuBar {
+    background-color: #505050;
+    color: #ffffff;
+}
+
+QMenuBar::item {
+    background-color: #505050;
+    color: #ffffff;
+}
+
+QMenuBar::item:selected {
+    background-color: #626262;
+}
+
+QMenu {
+    background-color: #505050;
+    color: #ffffff;
+}
+
+QMenu::item:selected {
+    background-color: #626262;
+}
+
+
+QComboBox {
+    border: 1px solid #767676;
+    background-color: #505050;
+    color: #000000; /* Texto de color negro */
+}
+
+QComboBox:editable {
+    background: #505050;
+    color: #000000; /* Texto editable de color negro */
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
+    border-left-width: 1px;
+    border-left-color: #767676;
+    border-left-style: solid;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+QComboBox::down-arrow {
+    color: #000000; 
+}
+

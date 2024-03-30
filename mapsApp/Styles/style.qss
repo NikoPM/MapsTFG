@@ -1,0 +1,95 @@
+QWidget {
+    background-color: #f2f2f2; /* Un gris claro en lugar de blanco */
+    color: #333; /* Texto en gris oscuro para contrastar bien con el fondo claro */
+}
+
+QLabel, QCheckBox, QRadioButton, QGroupBox {
+    color: #333;
+}
+
+QPushButton {
+    background-color: #ffcc80; /* Botones en tonalidad naranja claro */
+    color: #333;
+    border: 1px solid #ffb74d; /* Borde de los botones en un naranja más intenso */
+    padding: 5px;
+}
+
+QPushButton:hover {
+    background-color: #ffb74d; /* Un naranja más saturado al pasar el ratón */
+}
+
+QPushButton:pressed {
+    background-color: #ff9800; /* Naranja más oscuro al presionar */
+}
+
+QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QDoubleSpinBox, QComboBox {
+    background-color: #ffffff; /* Manteniendo blanco para campos de entrada por claridad */
+    color: #333;
+    border: 1px solid #cccccc;
+}
+
+QHeaderView::section {
+    background-color: #ffcc80;
+    color: #333;
+    padding-left: 4px;
+    border: 1px solid #ffb74d;
+}
+
+QTableWidget {
+    gridline-color: #cccccc;
+}
+
+QTableWidget QTableCornerButton::section {
+    background-color: #ffcc80;
+}
+
+QScrollBar:vertical, QScrollBar:horizontal {
+    border: 2px solid #f2f2f2;
+    background: #ffcc80;
+}
+
+QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
+    background: #ffb74d;
+    min-height: 20px;
+    min-width: 20px;
+}
+
+QScrollBar::add-line, QScrollBar::sub-line {
+    background: #ffcc80;
+}
+
+QTabWidget::pane {
+    border: 1px solid #ffb74d;
+}
+
+QTabBar::tab {
+    background: #ffcc80;
+    color: #333;
+}
+
+QTabBar::tab:selected, QTabBar::tab:hover {
+    background: #ffb74d;
+}
+
+QMenuBar {
+    background-color: #ffcc80;
+    color: #333;
+}
+
+QMenuBar::item {
+    background-color: #ffcc80;
+    color: #333;
+}
+
+QMenuBar::item:selected {
+    background-color: #ffb74d;
+}
+
+QMenu {
+    background-color: #ffcc80;
+    color: #333;
+}
+
+QMenu::item:selected {
+    background-color: #ffb74d;
+}

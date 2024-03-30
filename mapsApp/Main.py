@@ -1,9 +1,9 @@
 import sys
 import folium
 from VehiclesWindow import VehicleWindow
-from PyQt5.QtWidgets import QFileDialog, QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QPushButton, QWidget, QLineEdit, QComboBox, QTabWidget
+from PyQt5.QtWidgets import QAction, QFileDialog, QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QPushButton, QWidget, QLineEdit, QComboBox, QTabWidget
 from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtCore import QUrl
+from PyQt5.QtCore import QUrl, QFile, QTextStream
 import os
 import tempfile
 
@@ -26,6 +26,23 @@ class MapWindow(QMainWindow):
         # Tamaño mínimo de la ventana
         self.setMinimumSize(800, 450)  # Ancho por Alto en píxeles
 
+        # Crear la barra de menú
+        menuBar = self.menuBar()
+        
+        # Crear la pestaña de ajustes
+        settingsMenu = menuBar.addMenu('Ajustes')
+
+        # Crear las acciones del menú
+        darkModeAction = QAction('Activar modo oscuro', self, triggered=self.activateDarkMode)
+        lightModeAction = QAction('Quitar modo oscuro', self, triggered=self.deactivateDarkMode)
+
+        # Añadir las acciones al menú de ajustes
+        settingsMenu.addAction(darkModeAction)
+        settingsMenu.addAction(lightModeAction)
+
+        # Establece un estilo inicial (opcional)
+        self.activateDarkMode()
+
         # Crea el QTabWidget y lo establece como el widget central de la ventana principal
         self.tab_widget = QTabWidget()
         self.setCentralWidget(self.tab_widget)
@@ -39,7 +56,7 @@ class MapWindow(QMainWindow):
 
         # Añade las pestañas al QTabWidget
         self.tab_widget.addTab(main_tab, "Mapa")
-        self.tab_widget.addTab(self.vehicles_tab, "Vehículos")
+        self.tab_widget.addTab(self.vehicles_tab, "Caso")
 
     def setupMainTab(self, tab):
 
@@ -132,16 +149,29 @@ class MapWindow(QMainWindow):
         # Lógica para cargar el modelo
         print(modeldir, modelname, episodes)
 
+    def activateDarkMode(self):
+        self.applyStyleSheet("Styles/blackStyle.qss")
 
+    def deactivateDarkMode(self):
+        self.applyStyleSheet("Styles/style.qss")
+
+    def applyStyleSheet(self, styleSheetFile):
+        # Asegura que la ruta sea relativa al directorio actual del script
+        basePath = os.path.dirname(os.path.abspath(__file__))
+        filePath = os.path.join(basePath, styleSheetFile)
+
+        file = QFile(filePath)
+        if not file.open(QFile.ReadOnly | QFile.Text):
+            print(f"No se pudo abrir el archivo de estilos: {styleSheetFile}")
+            return
+        
+        stream = QTextStream(file)
+        self.setStyleSheet(stream.readAll())
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    # Carga la hoja de estilo
-    with open("mapsApp/style.qss", "r") as f:
-        _style = f.read()
-        app.setStyleSheet(_style)
-
     window = MapWindow()
+    window.show()
     sys.exit(app.exec_())

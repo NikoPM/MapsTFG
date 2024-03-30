@@ -1,7 +1,7 @@
 import folium
 import tempfile
 import os
-from PyQt5.QtWidgets import QFrame, QFileDialog, QMessageBox, QDialog, QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QStackedWidget
+from PyQt5.QtWidgets import QSizePolicy, QFrame, QFileDialog, QMessageBox, QDialog, QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QStackedWidget
 from PyQt5.QtGui import QColor
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import QUrl, Qt
@@ -20,6 +20,15 @@ class VehicleWindow(QWidget):
         # Contenedor para el mapa y el botón "Cargar Caso"
         mapContainer = QWidget()
         mapLayout = QVBoxLayout()  # QVBoxLayout para organizar el mapa y el botón verticalmente
+        mapContainer.setLayout(mapLayout)  # Establece el QVBoxLayout como el layout del contenedor del mapa
+        # Texto con la informacion del caso en el que se esta trabajando
+        self.text_case = QLabel("No hay caso seleccionado")
+        self.text_case.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        mapLayout.addWidget(self.text_case)
+        
+        # Añade el mapa
+        mapView = self.setupMap()
+        mapLayout.addWidget(self.text_case)
 
         # Configuración del mapa
         self.setupMap()
@@ -29,8 +38,11 @@ class VehicleWindow(QWidget):
         loadCaseButton = QPushButton("Cargar Caso")
         loadCaseButton.clicked.connect(self.load_case)  # Conecta el botón a la función load_case
         mapLayout.addWidget(loadCaseButton)
+        saveCaseButton = QPushButton("Guardar Caso")
+        saveCaseButton.clicked.connect(lambda: self.save_case(self.table1, self.table2))
+        mapLayout.addWidget(saveCaseButton)
 
-        mapContainer.setLayout(mapLayout)  # Establece el QVBoxLayout como el layout del contenedor del mapa
+        
         self.layout.addWidget(mapContainer, 1)
         # QStackedWidget para alternar entre el mensaje y las tablas
         self.tablesStack = QStackedWidget()
@@ -65,11 +77,14 @@ class VehicleWindow(QWidget):
         tablesLayout = QVBoxLayout(tablesWidget)
         # Configuración de la primera tabla y sus botones
         self.table1 = QTableWidget()
-        self.table1.setStyleSheet("background-color: white;")
+        table1_title = QLabel("NODOS")
+        table1_title.setAlignment(Qt.AlignCenter) 
         btn_add1 = QPushButton('+')
         btn_remove1 = QPushButton('-')
         btn_save1 = QPushButton('Guardar')
-        #btn_save1.clicked.connect(lambda: self.saveTableData(self.table1, 'table1.csv'))
+        btn_add1.clicked.connect(lambda: self.add_empty_row(self.table1))
+        btn_remove1.clicked.connect(lambda: self.delete_selected_row(self.table1))
+        btn_save1.clicked.connect(lambda: self.save_table_to_csv(self.table1))
         
         table1_buttons_layout = QHBoxLayout()
         table1_buttons_layout.addWidget(btn_add1)
@@ -78,16 +93,20 @@ class VehicleWindow(QWidget):
 
         # Agrega la tabla y los botones al layout específico de la primera tabla
         table1_layout = QVBoxLayout()
+        table1_layout.addWidget(table1_title)
         table1_layout.addWidget(self.table1)
         table1_layout.addLayout(table1_buttons_layout)
 
         # Configuración de la segunda tabla y sus botones
         self.table2 = QTableWidget() 
-        self.table2.setStyleSheet("background-color: white;")
+        table2_title = QLabel("VEHICULOS")
+        table2_title.setAlignment(Qt.AlignCenter)
         btn_add2 = QPushButton('+')
         btn_remove2 = QPushButton('-')
         btn_save2 = QPushButton('Guardar')
-        #btn_save2.clicked.connect(lambda: self.saveTableData(self.table2, 'table2.csv'))
+        btn_add2.clicked.connect(lambda: self.add_empty_row(self.table2))
+        btn_remove2.clicked.connect(lambda: self.delete_selected_row(self.table2))
+        btn_save2.clicked.connect(lambda: self.save_table_to_csv(self.table2))
         
         table2_buttons_layout = QHBoxLayout()
         table2_buttons_layout.addWidget(btn_add2)
@@ -96,6 +115,7 @@ class VehicleWindow(QWidget):
 
         # Agrega la tabla y los botones al layout específico de la segunda tabla
         table2_layout = QVBoxLayout()
+        table2_layout.addWidget(table2_title)
         table2_layout.addWidget(self.table2)
         table2_layout.addLayout(table2_buttons_layout)
 
@@ -147,10 +167,10 @@ class VehicleWindow(QWidget):
 
 
 
-    def add_empty_row(self):
+    def add_empty_row(self, table: QTableWidget):
         # Añade una nueva fila vacía a la tabla
-        row_count = self.table.rowCount()
-        self.table.insertRow(row_count)
+        row_count = table.rowCount()
+        table.insertRow(row_count)
 
 
     def add_vehicle(self):
@@ -167,7 +187,7 @@ class VehicleWindow(QWidget):
         
         if empty_found:
             # Muestra un diálogo de aviso si hay columnas en blanco
-            self.show_warning()
+            self.show_warning("Hay columnas en blanco")
         else:
             # No hay columnas en blanco, procede a guardar los datos en el .csv
             with open('mapsApp/vehicles.csv', 'w', newline='', encoding='utf-8') as csvfile:
@@ -178,15 +198,15 @@ class VehicleWindow(QWidget):
                 
                 self.save_table_to_csv()
         
-    def show_warning(self):
+    def show_warning(self, text: str):
         msgBox = QMessageBox()
         msgBox.setIcon(QMessageBox.Warning)
-        msgBox.setText("Hay columnas vacías en la tabla.")
+        msgBox.setText(text)
         msgBox.setWindowTitle("Advertencia")
         msgBox.exec_()
 
-    def delete_selected_vehicle(self):
-        selected_items = self.table.selectedItems()
+    def delete_selected_row(self, table: QTableWidget):
+        selected_items = table.selectedItems()
         if not selected_items:
             # Muestra un mensaje de advertencia si no hay fila seleccionada
             msgBox = QMessageBox()
@@ -196,7 +216,7 @@ class VehicleWindow(QWidget):
             msgBox.exec_()
             return  # Sale del método si no hay selección
 
-        selected_row = self.table.currentRow()  # Obtiene la fila actual seleccionada
+        selected_row = table.currentRow()  # Obtiene la fila actual seleccionada
         if selected_row == -1:  # No hay selección
             # Muestra un mensaje de advertencia si no hay fila seleccionada
             msgBox = QMessageBox()
@@ -206,22 +226,15 @@ class VehicleWindow(QWidget):
             msgBox.exec_()
             return
 
-        self.table.removeRow(selected_row)  # Elimina la fila seleccionada
-
-        # Actualiza los índices de todas las filas restantes
-        for row in range(self.table.rowCount()):
-            item = self.table.item(row, 0)  # Suponiendo que el índice está en la columna 0
-            if item:
-                item.setText(str(row + 1))  # Actualiza el índice basado en la nueva posición de la fila
+        table.removeRow(selected_row)  # Elimina la fila seleccionada
 
 
-
-    def save_table_to_csv(self):
-
+    def save_table_to_csv(self, table: QTableWidget):
+        initialPath = os.path.join("mapsApp/Cases")
         # Abre el cuadro de diálogo para guardar el archivo
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getSaveFileName(self, "Guardar como", "", "CSV Files (*.csv)", options=options)
+        fileName, _ = QFileDialog.getSaveFileName(self, "Guardar como", initialPath, "CSV Files (*.csv)", options=options)
         
         # Verifica si el usuario seleccionó un archivo
         if fileName:
@@ -230,16 +243,17 @@ class VehicleWindow(QWidget):
             with open(fileName, 'w', newline='', encoding='utf-8') as csvfile:
                 writer = csv.writer(csvfile)
                 # Escribe los encabezados
-                headers = [self.table.horizontalHeaderItem(i).text() for i in range(self.table.columnCount())]
+                headers = [table.horizontalHeaderItem(i).text() for i in range(table.columnCount())]
                 writer.writerow(headers)
                 
                 # Escribe los datos de cada fila
-                for row in range(self.table.rowCount()):
+                for row in range(table.rowCount()):
                     row_data = []
-                    for column in range(self.table.columnCount()):
-                        item = self.table.item(row, column)
+                    for column in range(table.columnCount()):
+                        item = table.item(row, column)
                         row_data.append(item.text() if item else "")
                     writer.writerow(row_data)
+
     def load_case(self):
         # Convertir la ruta inicial relativa a una absoluta
             # Si estás dentro de una clase y __file__ no está disponible, necesitarás establecer 'basePath' de otra manera
@@ -247,8 +261,46 @@ class VehicleWindow(QWidget):
             
             # Abre el cuadro de diálogo para seleccionar una carpeta
             options = QFileDialog.Options()
-            options |= QFileDialog.DontUseNativeDialog
+            options |= QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks
             folderPath = QFileDialog.getExistingDirectory(self, "Seleccionar Carpeta de Casos", initialPath, options=options)
             # Verifica si el usuario seleccionó una carpeta
             if folderPath:
+                folderName = os.path.basename(folderPath)
+                self.text_case.setText(f"Caso cargado: {folderName}")
                 self.load_data_from_csv(folderPath)
+
+    def save_case(self, table1: QTableWidget = None, table2: QTableWidget = None):
+        
+        if table1 is None or table1.rowCount() == 0 and table2 is None or table2.rowCount() == 0:
+            self.show_warning("Debe existir un caso")
+            return
+        
+        # Abre el cuadro de diálogo para seleccionar una carpeta
+        options = QFileDialog.Options()
+        folderPath = QFileDialog.getExistingDirectory(self, "Seleccionar Carpeta para Guardar Casos", "", options=options)
+        # Verifica si el usuario seleccionó una carpeta
+        if folderPath:
+            # Construye las rutas completas para cada archivo .csv dentro de la carpeta seleccionada
+            nodesFilePath = os.path.join(folderPath, "nodes.csv")
+            vehiclesFilePath = os.path.join(folderPath, "vehicles.csv")
+                
+            # Guarda los datos de cada tabla en su correspondiente archivo .csv
+            self.saveTableCase(table1, nodesFilePath)
+            self.saveTableCase(table2, vehiclesFilePath)
+        
+    
+    def saveTableCase(self, table: QTableWidget, filename: str):
+        with open(filename, mode='w', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+                # Opcional: Escribe los encabezados de las columnas si es necesario
+            headers = [table.horizontalHeaderItem(i).text() for i in range(table.columnCount())] if table.horizontalHeaderItem(0) is not None else []
+            writer.writerow(headers)
+            
+            # Itera a través de las filas de la tabla
+            for row in range(table.rowCount()):
+                rowData = []
+                for column in range(table.columnCount()):
+                    item = table.item(row, column)
+                    rowData.append(item.text() if item else '')
+                writer.writerow(rowData)
