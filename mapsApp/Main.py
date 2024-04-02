@@ -6,6 +6,8 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import QUrl, QFile, QTextStream
 import os
 import tempfile
+import crearYEntrenar
+
 
 #Clase de la ventana principal
 class MapWindow(QMainWindow):
@@ -87,10 +89,6 @@ class MapWindow(QMainWindow):
         # Textboxes y ComboBox
         self.txt_iteraciones = QLineEdit('n_iteraciones')
         self.txt_timesteps = QLineEdit('n_timesteps')
-        self.txt_modeldir_train = QLineEdit('model_dir')
-        self.txt_modeldir_load_model = QLineEdit('model_dir')
-        self.txt_logdir = QLineEdit('log_dir')
-        self.txt_modelname_train = QLineEdit('model_name')
         self.txt_modelname_load_model = QLineEdit('model_name')
         self.txt_episodes = QLineEdit('episodes')
         self.combo_options = QComboBox()
@@ -103,8 +101,8 @@ class MapWindow(QMainWindow):
         self.btn_load_case.clicked.connect(self.vehicles_tab.load_case)  # Conecta con el método load_case
         self.btn_train = QPushButton('Entrenar desde 0')
         self.btn_load_model = QPushButton('Cargar Modelo')
-        self.btn_train.clicked.connect(lambda: self.train(self.txt_iteraciones.text(), self.txt_timesteps.text(),self.txt_modeldir_train.text(), self.txt_logdir.text(), self.txt_modelname_train.text()))
-        self.btn_load_model.clicked.connect(lambda: self.load_model(self.txt_modeldir_load_model.text(), self.txt_modelname_load_model.text(), self.txt_episodes.text()))
+        self.btn_train.clicked.connect(lambda: self.train(self.txt_iteraciones.text(), self.txt_timesteps.text(), self.txt_modelname_train.text()))
+        self.btn_load_model.clicked.connect(lambda: self.load_model(self.txt_modelname_load_model.text(), self.txt_episodes.text()))
 
         # Formato
         self.txt_iteraciones
@@ -115,11 +113,7 @@ class MapWindow(QMainWindow):
         controls_layout.addWidget(self.btn_train)
         controls_layout.addWidget(self.txt_iteraciones)
         controls_layout.addWidget(self.txt_timesteps)
-        controls_layout.addWidget(self.txt_modeldir_train)
-        controls_layout.addWidget(self.txt_logdir)
-        controls_layout.addWidget(self.txt_modelname_train)
         controls_layout.addWidget(self.btn_load_model)
-        controls_layout.addWidget(self.txt_modeldir_load_model)
         controls_layout.addWidget(self.txt_modelname_load_model)
         controls_layout.addWidget(self.txt_episodes)
 
@@ -140,10 +134,19 @@ class MapWindow(QMainWindow):
 
     #Funciones de los botones
     
+    """Función del boton crear y entrenar desde 0"""
+    def train(self, iteraciones, timesteps, modelname, nVehiculos, nNodos):
+        
+        initialPath = os.path.join("mapsApp/Cases")
+        # Abre el cuadro de diálogo para seleccionar una carpeta
+        options = QFileDialog.Options()
+        options |= QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks
+        folderPath = QFileDialog.getExistingDirectory(self, "Selecciona carpeta donde guardar el resultado", initialPath, options=options)
+        logdir = folderPath + "/log"
 
-    def train(self, iteraciones, timesteps, modeldir, logdir, modelname):
-        # Aquí va tu lógica para entrenar el modelo usando los argumentos proporcionados
-        print(iteraciones, timesteps, modeldir, logdir, modelname)
+        # Procede a llamar a la clase crearYEntrenar
+        gym = crearYEntrenar
+        gym.entrenarDesdeCero(self.combo_options.currentText(), folderPath, logdir, iteraciones, timesteps, nVehiculos, nNodos)
 
     def load_model(self, modeldir, modelname, episodes):
         # Lógica para cargar el modelo
