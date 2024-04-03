@@ -126,7 +126,6 @@ class MapWindow(QMainWindow):
 
         # Añade los layouts de mapa y controles al layout principal
         main_layout.addWidget(contenedor)
-        main_layout.addLayout(map_layout, 3)
         main_layout.addLayout(controls_layout, 1)
 
         # Widget central para contener el layout principal

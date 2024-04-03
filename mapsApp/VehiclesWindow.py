@@ -1,18 +1,23 @@
 import folium
+from folium import Element
+from folium.map import CustomPane
 import tempfile
 import os
+from bs4 import BeautifulSoup
 from PyQt5.QtWidgets import QSizePolicy, QFrame, QFileDialog, QMessageBox, QDialog, QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QStackedWidget
 from PyQt5.QtGui import QColor
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import QUrl, Qt
 from InputDialog import InputDialog
 import csv
+from MapsManager import MapsManager
 
 
 class VehicleWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
+        self.mapsManager = MapsManager
         
 
     def initUI(self):
@@ -26,9 +31,6 @@ class VehicleWindow(QWidget):
         self.text_case.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
         mapLayout.addWidget(self.text_case)
         
-        # Añade el mapa
-        mapView = self.setupMap()
-        mapLayout.addWidget(self.text_case)
 
         # Configuración del mapa
         self.setupMap()
@@ -62,14 +64,11 @@ class VehicleWindow(QWidget):
         self.layout.addWidget(self.tablesStack, 2)
     
     def setupMap(self):
-        # Crear un mapa usando Folium apuntando a Bilbao
-        self.map = folium.Map(location=[43.2630, -2.9350], zoom_start=12)
-        tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.html')
-        self.map.save(tmp_file.name)
-        
+        ruta_absoluta = os.path.abspath("Mapas/mapabase.html")
+        url = QUrl.fromLocalFile(ruta_absoluta)
         # Crea un QWebEngineView como contenedor del mapa de Folium
         self.web_view = QWebEngineView()
-        self.web_view.load(QUrl.fromLocalFile(tmp_file.name))
+        self.web_view.load(url)
 
 
     def setupTablesAndButtons(self):
@@ -268,6 +267,7 @@ class VehicleWindow(QWidget):
                 folderName = os.path.basename(folderPath)
                 self.text_case.setText(f"Caso cargado: {folderName}")
                 self.load_data_from_csv(folderPath)
+                self.extraer_coordenadas(self.table1, folderPath)
 
     def save_case(self, table1: QTableWidget = None, table2: QTableWidget = None):
         
@@ -304,3 +304,22 @@ class VehicleWindow(QWidget):
                     item = table.item(row, column)
                     rowData.append(item.text() if item else '')
                 writer.writerow(rowData)
+
+
+#Funciones que relacionan las tablas con el mapa
+
+    def extraer_coordenadas(self, tabla, folderPath):
+        coordenadas = []
+        for fila in range(tabla.rowCount()):
+            latitud = tabla.item(fila, 1).text()  
+            longitud = tabla.item(fila, 2).text()  
+            coordenadas.append((float(latitud), float(longitud)))
+        self.mapsManager.crearMapaAlCargar(folderPath + '/mapa.html', coordenadas)
+        ruta_absoluta = os.path.abspath(folderPath + "/mapa.html")
+        url = QUrl.fromLocalFile(ruta_absoluta)
+        self.web_view.load(url)
+
+
+
+
+
