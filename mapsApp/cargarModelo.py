@@ -12,8 +12,8 @@ import time
 Definimos primero dónde buscar el modelo ya entrenado.
 """
 
-model_name = "temp/2048.zip"
-models_dir = "temp" # Sin el -1 de las acciones, no funciona ni tan mal, pero tarda la vida. 
+model_name = "Models/Modelo0/models/102400.zip"
+models_dir = "mapsApp" # Sin el -1 de las acciones, no funciona ni tan mal, pero tarda la vida. 
 model_path = f"{models_dir}/{model_name}"
 
 """
@@ -22,7 +22,7 @@ INICIALIZACIÓN DE ENTORNO Y AGENTE
 nVehiculos = 7
 nNodos = 20
 
-env = gym.make('rl_routing:VRPEnv-v0',  nVehiculos = 5, nNodos = 15, maxNumVehiculos = 7, maxNumNodos = 20, maxNodeCapacity = 4, sameMaxNodeVehicles=False, render_mode='human', dataPath = 'data/')
+env = gym.make('rl_routing:VRPEnv-v0',  nVehiculos = 5, nNodos = 15, maxNumVehiculos = 7, maxNumNodos = 20, maxNodeCapacity = 4, sameMaxNodeVehicles=False, render_mode='human', dataPath = 'mapsApp/Cases/Case2/')
 #env.readEnvFromFile(nVehiculos = 5, nNodos = 15, maxVehicles = 7, maxNodos = 20, dataPath = 'data/')
 env.reset()
 

@@ -87,9 +87,10 @@ class MapWindow(QMainWindow):
         map_layout.addWidget(self.web_view)
 
         # Textboxes y ComboBox
-        self.txt_iteraciones = QLineEdit('n_iteraciones')
-        self.txt_timesteps = QLineEdit('n_timesteps')
-        self.txt_modelname_load_model = QLineEdit('model_name')
+        self.txt_iteraciones = QLineEdit('Iteraciones (Default = 10)')
+        self.txt_timesteps = QLineEdit('Timesteps (Múltiplos de 2048) (Default = 10.240)')
+        self.nVehicles = QLineEdit('Vehiculos (Default = 7)')
+        self.nNodos = QLineEdit('Nodos (Default = 20)')
         self.txt_episodes = QLineEdit('episodes')
         self.combo_options = QComboBox()
         self.combo_options.setStyleSheet("QComboBox { background-color: white; font-size: 12px; }")
@@ -101,7 +102,7 @@ class MapWindow(QMainWindow):
         self.btn_load_case.clicked.connect(self.vehicles_tab.load_case)  # Conecta con el método load_case
         self.btn_train = QPushButton('Entrenar desde 0')
         self.btn_load_model = QPushButton('Cargar Modelo')
-        self.btn_train.clicked.connect(lambda: self.train(self.txt_iteraciones.text(), self.txt_timesteps.text(), self.txt_modelname_train.text()))
+        self.btn_train.clicked.connect(lambda: self.train(self.txt_iteraciones.text(), self.txt_timesteps.text(), self.nVehicles.text(), self.nNodos.text()))
         self.btn_load_model.clicked.connect(lambda: self.load_model(self.txt_modelname_load_model.text(), self.txt_episodes.text()))
 
         # Formato
@@ -113,8 +114,9 @@ class MapWindow(QMainWindow):
         controls_layout.addWidget(self.btn_train)
         controls_layout.addWidget(self.txt_iteraciones)
         controls_layout.addWidget(self.txt_timesteps)
+        controls_layout.addWidget(self.nVehicles)
+        controls_layout.addWidget(self.nNodos)
         controls_layout.addWidget(self.btn_load_model)
-        controls_layout.addWidget(self.txt_modelname_load_model)
         controls_layout.addWidget(self.txt_episodes)
 
         # Añade los botones al layout del mapa
@@ -134,17 +136,37 @@ class MapWindow(QMainWindow):
     #Funciones de los botones
     
     """Función del boton crear y entrenar desde 0"""
-    def train(self, iteraciones, timesteps, modelname, nVehiculos, nNodos):
-        
-        initialPath = os.path.join("mapsApp/Cases")
+    def train(self, iteraciones, timesteps, nVehiculos, nNodos):
+        if self.combo_options.currentText() == "Seleccione el algoritmo":
+            self.vehicles_tab.show_warning("No hay algoritmo seleccionado")
+            return
+        initialPath = os.path.join("mapsApp/Models")
         # Abre el cuadro de diálogo para seleccionar una carpeta
         options = QFileDialog.Options()
         options |= QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks
         folderPath = QFileDialog.getExistingDirectory(self, "Selecciona carpeta donde guardar el resultado", initialPath, options=options)
-        logdir = folderPath + "/log"
+        logdir = folderPath + "log"
 
         # Procede a llamar a la clase crearYEntrenar
         gym = crearYEntrenar
+        if iteraciones == 'Iteraciones (Default = 10)':
+            iteraciones = 10
+        else:
+            iteraciones = int(iteraciones)
+        if timesteps == 'Timesteps (Múltiplos de 2048) (Default = 10.240)':
+            timesteps = 10240
+        else:
+            timesteps = int(timesteps)
+        if nVehiculos == 'Vehiculos (Default = 7)':
+            nVehiculos = 7
+        else:
+            nVehiculos = int(nVehiculos)
+        if nNodos == 'Nodos (Default = 20)':
+            nNodos = 20
+        else:
+            nNodos = int(nNodos)
+
+        print(f'{iteraciones, timesteps, nVehiculos, nNodos}')
         gym.entrenarDesdeCero(self.combo_options.currentText(), folderPath, logdir, iteraciones, timesteps, nVehiculos, nNodos)
 
     def load_model(self, modeldir, modelname, episodes):
