@@ -7,6 +7,9 @@ from PyQt5.QtCore import QUrl, QFile, QTextStream
 import os
 import tempfile
 import crearYEntrenar
+import cargarModelo
+from MessageManager import MessageManager
+import threading 
 
 
 #Clase de la ventana principal
@@ -18,6 +21,8 @@ class MapWindow(QMainWindow):
         self.show()  # Método para abrir la ventana
         self.vehicles_tab = VehicleWindow()
         self.initUI()   # Método con los parámetros de la ventana
+        self.cargarModelo = cargarModelo
+        self.messageManager = MessageManager()
  
 
     def initUI(self):
@@ -103,7 +108,7 @@ class MapWindow(QMainWindow):
         self.btn_train = QPushButton('Entrenar desde 0')
         self.btn_load_model = QPushButton('Cargar Modelo')
         self.btn_train.clicked.connect(lambda: self.train(self.txt_iteraciones.text(), self.txt_timesteps.text(), self.nVehicles.text(), self.nNodos.text()))
-        self.btn_load_model.clicked.connect(lambda: self.load_model(self.txt_modelname_load_model.text(), self.txt_episodes.text()))
+        self.btn_load_model.clicked.connect(self.load_model)
 
         # Formato
         self.txt_iteraciones
@@ -138,7 +143,7 @@ class MapWindow(QMainWindow):
     """Función del boton crear y entrenar desde 0"""
     def train(self, iteraciones, timesteps, nVehiculos, nNodos):
         if self.combo_options.currentText() == "Seleccione el algoritmo":
-            self.vehicles_tab.show_warning("No hay algoritmo seleccionado")
+            MessageManager.show_warning("No hay algoritmo seleccionado")
             return
         initialPath = os.path.join("mapsApp/Models")
         # Abre el cuadro de diálogo para seleccionar una carpeta
@@ -169,9 +174,37 @@ class MapWindow(QMainWindow):
         print(f'{iteraciones, timesteps, nVehiculos, nNodos}')
         gym.entrenarDesdeCero(self.combo_options.currentText(), folderPath, logdir, iteraciones, timesteps, nVehiculos, nNodos)
 
-    def load_model(self, modeldir, modelname, episodes):
-        # Lógica para cargar el modelo
-        print(modeldir, modelname, episodes)
+    def load_model(self):
+        # Define la ruta inicial para el diálogo de apertura de archivos
+        initialPath = os.path.abspath("mapsApp/Models")
+
+        # Abre el cuadro de diálogo para seleccionar un archivo .zip
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        models_path, _ = QFileDialog.getOpenFileName(self, "Cargar Modelo", initialPath, "Modelos (*.zip)", options=options)
+
+        # Verifica si el usuario seleccionó un archivo
+        if models_path:
+            # Deshabilita la ventana principal mientras se carga el modelo
+            self.setEnabled(False)
+            # Muestra un mensaje de espera al usuario
+            self.messageManager.show_loading_message()
+
+            # Define una función interna para cargar el modelo en un hilo
+            def _load_model():
+                # Cargar el modelo
+                self.cargarModelo.cargarModelo(models_path)
+                # Una vez cargado, vuelve a habilitar la ventana principal
+                self.setEnabled(True)
+                # Oculta el mensaje de espera
+                self.messageManager.hide_loading_message()
+
+            # Crea un hilo para cargar el modelo
+            thread = threading.Thread(target=_load_model)
+            # Inicia el hilo
+            thread.start()
+
+
 
     def activateDarkMode(self):
         self.applyStyleSheet("Styles/blackStyle.qss")
@@ -191,6 +224,8 @@ class MapWindow(QMainWindow):
         
         stream = QTextStream(file)
         self.setStyleSheet(stream.readAll())
+
+
 
 
 if __name__ == '__main__':

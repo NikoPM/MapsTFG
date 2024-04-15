@@ -40,44 +40,29 @@
     
     
             <div class="folium-map" id="map_5499b0ea0329795cfd0970b133c0823b" ></div>
+
         
 </body>
 <script>
-    
-    
-            var map_5499b0ea0329795cfd0970b133c0823b = L.map(
-                "map_5499b0ea0329795cfd0970b133c0823b",
-                {
-                    center: [43.263, -2.935],
-                    crs: L.CRS.EPSG3857,
-                    zoom: 12,
-                    zoomControl: true,
-                    preferCanvas: false,
-                }
-            );
 
-            
+    var map_5499b0ea0329795cfd0970b133c0823b = L.map(
+        "map_5499b0ea0329795cfd0970b133c0823b",
+        {
+            center: [43.263, -2.935],
+            crs: L.CRS.EPSG3857,
+            zoom: 12,
+            zoomControl: true,
+            preferCanvas: false,
+        }
+    );
 
-        
-    
-            var tile_layer_ca4a18a73b3df2aae9882a1c6f69b33c = L.tileLayer(
-                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detectRetina": false, "maxNativeZoom": 19, "maxZoom": 19, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
-            );
-        
-    
-            tile_layer_ca4a18a73b3df2aae9882a1c6f69b33c.addTo(map_5499b0ea0329795cfd0970b133c0823b);
+    var tile_layer_ca4a18a73b3df2aae9882a1c6f69b33c = L.tileLayer(
+        "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detectRetina": false, "maxNativeZoom": 19, "maxZoom": 19, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+    );
 
-            document.addEventListener("DOMContentLoaded", function() {
-            // Suponiendo que 'map' es la variable global ya definida por Folium para el mapa
-            map_5499b0ea0329795cfd0970b133c0823b.on('click', function(e) {
-                var confirmar = confirm('¿Quieres añadir un nodo?');
-                if (confirmar) {
-                L.marker([e.latlng.lat, e.latlng.lng]).addTo(map_5499b0ea0329795cfd0970b133c0823b)
-                    .bindPopup('Lat: ' + e.latlng.lat + ', Lon: ' + e.latlng.lng).openPopup();
-                }
-            });
-            });
-        
+    tile_layer_ca4a18a73b3df2aae9882a1c6f69b33c.addTo(map_5499b0ea0329795cfd0970b133c0823b);
+
+
 </script>
 </html>
