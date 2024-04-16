@@ -177,16 +177,17 @@ class VehicleWindow(QWidget):
                     table.setRowCount(0)
                     table.setColumnCount(0)
                     
+                    # Añade los datos a la tabla, comenzando desde la segunda columna
                     for row_index, row in enumerate(reader):
                         if row_index == 0:
-                            # Configura los encabezados de columna en la primera fila
-                            table.setColumnCount(len(row))
-                            table.setHorizontalHeaderLabels(row)
+                            # Configura los encabezados de columna en la primera fila (excepto el primer elemento)
+                            table.setColumnCount(len(row) - 1)
+                            table.setHorizontalHeaderLabels(row[1:])  # Excluir el primer elemento (índice)
                         else:
-                            # Añade los datos a la tabla
+                            # Añade los datos a la tabla, excluyendo la primera columna
                             table.insertRow(table.rowCount())
-                            for column_index, cell in enumerate(row):
-                                table.setItem(table.rowCount() - 1, column_index, QTableWidgetItem(cell))
+                            for column_index, cell in enumerate(row[1:], start=1):  # Excluir el primer elemento (índice)
+                                table.setItem(table.rowCount() - 1, column_index - 1, QTableWidgetItem(cell))
                                 
                     # Cambia a mostrar la tabla y sus botones una vez cargados los datos
                 self.tablesStack.setCurrentIndex(1)
@@ -259,16 +260,16 @@ class VehicleWindow(QWidget):
             writer = csv.writer(csvfile)
             # Escribe los encabezados
             headers = [table.horizontalHeaderItem(i).text() for i in range(table.columnCount())]
-            writer.writerow(headers)
-                
-            # Escribe los datos de cada fila
+            writer.writerow(['Index'] + headers)  # Añade 'Index' como el primer encabezado
+            # Escribe los datos de cada fila con un índice incremental
             for row in range(table.rowCount()):
-                row_data = []
+                row_data = [str(row)]  # Ajusta el índice inicial a 0 y lo convierte en cadena
                 for column in range(table.columnCount()):
                     item = table.item(row, column)
                     row_data.append(item.text() if item else "")
                 writer.writerow(row_data)
         self.extraer_coordenadas(self.table1, self.casePath)
+
 
     def load_case(self):
         # Convertir la ruta inicial relativa a una absoluta
@@ -329,13 +330,21 @@ class VehicleWindow(QWidget):
     def extraer_coordenadas(self, tabla, folderPath):
         coordenadas = []
         for fila in range(tabla.rowCount()):
-            latitud = tabla.item(fila, 1).text()  
-            longitud = tabla.item(fila, 2).text()  
+            latitud = tabla.item(fila, 0).text()  
+            longitud = tabla.item(fila, 1).text()  
             coordenadas.append((float(latitud), float(longitud)))
         self.mapsManager.crearMapaAlCargar(folderPath + '/mapa.html', coordenadas)
-        ruta_absoluta = os.path.abspath(folderPath + "/mapa.html")
+        """ruta_absoluta = os.path.abspath(folderPath + "/mapa.html")
+        url = QUrl.fromLocalFile(ruta_absoluta)
+        self.web_view.load(url)"""
+        self.mostrarRutas(self.casePath, [0,2,1])
+
+    def mostrarRutas(self, folderPath, ruta):
+        self.mapsManager.dibujarRuta(folderPath + '/mapa.html' , folderPath + '/mapaRuta.html', ruta )
+        ruta_absoluta = os.path.abspath(folderPath + "/mapaRuta.html")
         url = QUrl.fromLocalFile(ruta_absoluta)
         self.web_view.load(url)
+
 
 
 
