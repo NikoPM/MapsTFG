@@ -41,7 +41,7 @@ class MapsManager:
 
                 # Generar el nuevo código JavaScript para añadir marcadores
                 nuevo_js = "\n\n"
-                for lat, lon in coordenadas:
+                for lat, lon in coordenadas:                   
                     nuevo_js += f"L.marker([{lat}, {lon}]).addTo(map_5499b0ea0329795cfd0970b133c0823b).bindPopup('Lat: {lat}, Lon: {lon}');\n"
 
                 # Asumiendo que quieres añadir el código al final del último script
@@ -88,12 +88,19 @@ class MapsManager:
             # Creamos la ruta dinámicamente
             print(all_markers)
             ruta_lines = []
+            atributos = "{patterns: [{offset: 25,repeat: 50,symbol: L.Symbol.arrowHead({pixelSize: 10,polygon: false,pathOptions: {stroke: true,color: 'red'}})}]}"
+            indice = 0  
             for i in range(0, len(ruta) - 1):
                 marker_start = all_markers[ruta[i]]
                 marker_end = all_markers[ruta[i + 1]]
                 print(marker_start)
-                ruta_lines.append(f"L.polyline([[{marker_start[1]}, {marker_start[2]}], [{marker_end[1]}, {marker_end[2]}]], {{color: 'red'}}).addTo(map_5499b0ea0329795cfd0970b133c0823b);")
-
+                ruta_lines.append(f"var polyline{indice}= L.polyline([[{marker_start[1]}, {marker_start[2]}], [{marker_end[1]}, {marker_end[2]}]], {{color: 'red'}}).addTo(map_5499b0ea0329795cfd0970b133c0823b);")
+                indice+=1
+            indice = 0  
+            for i in range(0, len(ruta) - 1):        
+                ruta_lines.append(f"var arrowDecorator{indice} = L.polylineDecorator(polyline{indice}, {atributos});")
+                ruta_lines.append(f"arrowDecorator{indice}.addTo(map_5499b0ea0329795cfd0970b133c0823b);")
+                indice+=1
             # Agregamos las líneas de ruta al final del último script
             if ruta_lines:
                 if script_tags:

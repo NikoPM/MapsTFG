@@ -13,6 +13,9 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+<script src="../leaflet.polylineDecorator.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css" rel="stylesheet"/>
 <link href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css" rel="stylesheet"/>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
 <link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet"/>
@@ -55,6 +58,17 @@
 
     tile_layer_ca4a18a73b3df2aae9882a1c6f69b33c.addTo(map_5499b0ea0329795cfd0970b133c0823b);
 
+    var arrowIcon = L.icon({
+        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+        iconSize: [25, 41], // Tamaño del icono
+        iconAnchor: [12, 41], // Punto de anclaje del icono (la punta de la flecha)
+        popupAnchor: [1, -34], // Desplazamiento del popup
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+        shadowSize: [41, 41], // Tamaño de la sombra
+        shadowAnchor: [12, 41]  // Punto de anclaje de la sombra
+    });
+
+
 
 
 
@@ -62,6 +76,10 @@ L.marker([41.6921541, -3.6836462]).addTo(map_5499b0ea0329795cfd0970b133c0823b).b
 L.marker([43.26271, -2.92528]).addTo(map_5499b0ea0329795cfd0970b133c0823b).bindPopup('Marcador 1: Lat: 43.26271, Lon: -2.92528');
 L.marker([42.84998, -2.67268]).addTo(map_5499b0ea0329795cfd0970b133c0823b).bindPopup('Marcador 2: Lat: 42.84998, Lon: -2.67268');
 
-L.polyline([[41.6921541, -3.6836462], [42.84998, -2.67268]], {color: 'red'}).addTo(map_5499b0ea0329795cfd0970b133c0823b);
-L.polyline([[42.84998, -2.67268], [43.26271, -2.92528]], {color: 'red'}).addTo(map_5499b0ea0329795cfd0970b133c0823b);</script>
+var polyline0= L.polyline([[41.6921541, -3.6836462], [42.84998, -2.67268]], {color: 'red'}).addTo(map_5499b0ea0329795cfd0970b133c0823b);
+var polyline1= L.polyline([[42.84998, -2.67268], [43.26271, -2.92528]], {color: 'red'}).addTo(map_5499b0ea0329795cfd0970b133c0823b);
+var arrowDecorator0 = L.polylineDecorator(polyline0, {patterns: [{offset: 25,repeat: 50,symbol: L.Symbol.arrowHead({pixelSize: 10,polygon: false,pathOptions: {stroke: true,color: 'red'}})}]});
+arrowDecorator0.addTo(map_5499b0ea0329795cfd0970b133c0823b);
+var arrowDecorator1 = L.polylineDecorator(polyline1, {patterns: [{offset: 25,repeat: 50,symbol: L.Symbol.arrowHead({pixelSize: 10,polygon: false,pathOptions: {stroke: true,color: 'red'}})}]});
+arrowDecorator1.addTo(map_5499b0ea0329795cfd0970b133c0823b);</script>
 </html>
