@@ -1,6 +1,7 @@
 import sys
 import folium
 from VehiclesWindow import VehicleWindow
+from RoutesWindow import RoutesWindow
 from PyQt5.QtWidgets import QAction, QFileDialog, QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QPushButton, QWidget, QLineEdit, QComboBox, QTabWidget
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import QUrl, QFile, QTextStream
@@ -20,6 +21,7 @@ class MapWindow(QMainWindow):
         self.setWindowTitle('TFG Nicolás')  # Titulo de la ventana      
         self.show()  # Método para abrir la ventana
         self.vehicles_tab = VehicleWindow()
+        self.routes_tab = RoutesWindow()
         self.initUI()   # Método con los parámetros de la ventana
         self.cargarModelo = cargarModelo
         self.messageManager = MessageManager()
@@ -64,6 +66,7 @@ class MapWindow(QMainWindow):
         # Añade las pestañas al QTabWidget
         self.tab_widget.addTab(main_tab, "Mapa")
         self.tab_widget.addTab(self.vehicles_tab, "Caso")
+        self.tab_widget.addTab(self.routes_tab, "Solución")
 
     def setupMainTab(self, tab):
 
@@ -171,8 +174,15 @@ class MapWindow(QMainWindow):
         else:
             nNodos = int(nNodos)
 
-        print(f'{iteraciones, timesteps, nVehiculos, nNodos}')
-        gym.entrenarDesdeCero(self.combo_options.currentText(), folderPath, logdir, iteraciones, timesteps, nVehiculos, nNodos)
+        self.setEnabled(False)
+        self.messageManager.show_loading_message()
+        def _train():
+            gym.entrenarDesdeCero(self.combo_options.currentText(), folderPath, logdir, iteraciones, timesteps, nVehiculos, nNodos)
+            self.setEnabled(True)
+            # Oculta el mensaje de espera
+            self.messageManager.hide_loading_message()
+        
+
 
     def load_model(self):
         # Define la ruta inicial para el diálogo de apertura de archivos
@@ -204,7 +214,7 @@ class MapWindow(QMainWindow):
             # Inicia el hilo
             thread.start()
 
-
+    """Métodos para la modificación de la interfaz"""
 
     def activateDarkMode(self):
         self.applyStyleSheet("Styles/blackStyle.qss")

@@ -1,11 +1,5 @@
-import folium
-from folium import Element
-from folium.map import CustomPane
-import tempfile
 import os
-from bs4 import BeautifulSoup
-from PyQt5.QtWidgets import QSizePolicy, QFrame, QFileDialog, QMessageBox, QDialog, QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTableWidget, QTableWidgetItem, QHeaderView, QLabel, QStackedWidget
-from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import QSizePolicy, QFileDialog, QMessageBox, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTableWidget, QTableWidgetItem, QLabel, QStackedWidget
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import QUrl, Qt, QObject, pyqtSignal
 import csv
