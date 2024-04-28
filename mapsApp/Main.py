@@ -181,6 +181,9 @@ class MapWindow(QMainWindow):
             self.setEnabled(True)
             # Oculta el mensaje de espera
             self.messageManager.hide_loading_message()
+
+        thread = threading.Thread(target=_train)
+        thread.start()
         
 
 

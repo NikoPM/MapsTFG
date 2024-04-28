@@ -16,10 +16,10 @@ def cargarModelo(model_path):
     """
     INICIALIZACIÓN DE ENTORNO Y AGENTE
     """
-    nVehiculos = 7
-    nNodos = 20
+    nVehiculos = 3
+    nNodos = 7
 
-    env = gym.make('rl_routing:VRPEnv-v0',  nVehiculos = 5, nNodos = 15, maxNumVehiculos = 7, maxNumNodos = 20, maxNodeCapacity = 4, sameMaxNodeVehicles=False, render_mode='human', dataPath = 'mapsApp/Cases/Case4/')
+    env = gym.make('rl_routing:VRPEnv-v0',  nVehiculos = nVehiculos, nNodos = nNodos, maxNumVehiculos = nVehiculos+1, maxNumNodos = nNodos, maxNodeCapacity = 4, sameMaxNodeVehicles=False, render_mode='human', dataPath = 'mapsApp/Cases/Caso Farmacias/')
     #env.readEnvFromFile(nVehiculos = 5, nNodos = 15, maxVehicles = 7, maxNodos = 20, dataPath = 'data/')
     env.reset()
 
