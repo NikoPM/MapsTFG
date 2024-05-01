@@ -5,7 +5,6 @@ from stable_baselines3.common.vec_env import VecExtractDictObs, VecMonitor, Dumm
 from rl_routing.envs.vrpEnv import VRPEnv
 
 import gymnasium as gym
-import os
 import time
 
 """
@@ -18,8 +17,7 @@ def cargarModelo(model_path):
     """
     nVehiculos = 3
     nNodos = 7
-
-    env = gym.make('rl_routing:VRPEnv-v0',  nVehiculos = nVehiculos, nNodos = nNodos, maxNumVehiculos = nVehiculos+1, maxNumNodos = nNodos, maxNodeCapacity = 4, sameMaxNodeVehicles=False, render_mode='human', dataPath = 'mapsApp/Cases/Caso Farmacias/')
+    env = gym.make('rl_routing:VRPEnv-v0',  nVehiculos = nVehiculos, nNodos = nNodos, maxNumVehiculos = nVehiculos, maxNumNodos = nNodos, maxNodeCapacity = 4, sameMaxNodeVehicles=False, render_mode='human', dataPath = 'mapsApp/Cases/Caso Farmacias/')
     #env.readEnvFromFile(nVehiculos = 5, nNodos = 15, maxVehicles = 7, maxNodos = 20, dataPath = 'data/')
     env.reset()
 

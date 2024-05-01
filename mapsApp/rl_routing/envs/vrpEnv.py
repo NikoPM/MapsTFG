@@ -8,6 +8,8 @@ from utils.dataReader import DataReader
 import copy
 import os
 from datetime import date
+from MapsManager import MapsManager
+
 
 
 class VRPEnv(gym.Env):
@@ -22,6 +24,8 @@ class VRPEnv(gym.Env):
 
     prev_action = 0
     prev_vehicle = 0
+    
+    
 
 
     def __init__(self, nVehiculos, nNodos,
@@ -30,7 +34,7 @@ class VRPEnv(gym.Env):
                 sameMaxNodeVehicles = False, twMin = None, twMax = None,
                 speed = 70, seed = None,  multiTrip = False, singlePlot = False, 
                 name = None, dataPath = None, render_mode = None):
-
+        
         super(VRPEnv, self).__init__()
 
         if seed is not None:
@@ -47,6 +51,8 @@ class VRPEnv(gym.Env):
         self.currTotalSteps = 0
         self.currEpisodeSteps = 0
         self.name = name
+        self.case_path = None
+        
 
         self.isDoneFunction = self.isDone
 
@@ -80,7 +86,6 @@ class VRPEnv(gym.Env):
 
         # Creamos el espacio de acciones y el espacio de observaciones
         self.createSpaces()
-
 
     # Método que creará un entorno a partir de lo que se haya almacenado en los ficheros.
     def readEnvFromFile(self, nVehiculos, nNodos, maxVehicles, maxNodos, dataPath):
@@ -520,20 +525,19 @@ class VRPEnv(gym.Env):
 
     # Crea y guarda una imagen y un report el último conjunto de grafos completado 
     def render(self):
-        
+        maps = MapsManager.get_instance()
+        print(maps.case_path)
         if self.grafoCompletado == None:
             return
         
-        dir = 'default'
-
         # Llama a un método de guardado o a otro dependiendo de si se quieren todas las rutas en un mismo plot o no
         if self.singlePlot:
-            self.grafoCompletado.guardarGrafosSinglePlot(dir)
+            self.grafoCompletado.guardarGrafosSinglePlot(maps.case_path)
 
         else:
-            self.grafoCompletado.guardarGrafos(dir)
+            self.grafoCompletado.guardarGrafos(maps.case_path)
 
-        self.crearReport(self.ordenVisitasCompletas, self.tiempoFinal, directorio = dir)
+        self.crearReport(self.ordenVisitasCompletas, self.tiempoFinal, directorio = maps.case_path)
 
 
     # Guarda el conjunto actual de grafos, independientemente de si están completos o no
@@ -557,7 +561,7 @@ class VRPEnv(gym.Env):
         if fecha is None:
             fecha = str(date.today())
 
-        directorio = os.path.join(directorio, fecha)
+        directorio = os.path.join(directorio, "Reports")
 
         if not os.path.exists(directorio):
             os.makedirs(directorio)

@@ -10,6 +10,7 @@ import tempfile
 import crearYEntrenar
 import cargarModelo
 from MessageManager import MessageManager
+from MapsManager import MapsManager
 import threading 
 
 
@@ -25,6 +26,8 @@ class MapWindow(QMainWindow):
         self.initUI()   # Método con los parámetros de la ventana
         self.cargarModelo = cargarModelo
         self.messageManager = MessageManager()
+        self.case_path = None
+        self.mapsM = MapsManager()
  
 
     def initUI(self):
@@ -189,8 +192,14 @@ class MapWindow(QMainWindow):
 
     def load_model(self):
         # Define la ruta inicial para el diálogo de apertura de archivos
+        initialPath = os.path.abspath("mapsApp/Cases")
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        self.case_path = QFileDialog.getExistingDirectory(self, "Seleccionar Carpeta de Casos", initialPath, options=options)
         initialPath = os.path.abspath("mapsApp/Models")
-
+        mapMang = MapsManager.get_instance()
+        mapMang.case_path = self.case_path
+        mapMang.setPath(self.case_path)
         # Abre el cuadro de diálogo para seleccionar un archivo .zip
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog

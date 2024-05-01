@@ -5,6 +5,8 @@ from PyQt5.QtCore import QUrl, Qt, QObject, pyqtSignal
 import csv
 from MapsManager import MapsManager
 from MessageManager import MessageManager
+from RoutesWindow import RoutesWindow
+import glob
 
 
 
@@ -18,6 +20,7 @@ class VehicleWindow(QWidget):
         self.initUI()
         self.mapsManager = MapsManager
         self.messageManager = MessageManager()
+        self.routesW = RoutesWindow()
         
 
     def initUI(self):
@@ -96,8 +99,8 @@ class VehicleWindow(QWidget):
         self.table1 = QTableWidget()
         table1_title = QLabel("NODOS")
         table1_title.setAlignment(Qt.AlignCenter) 
-        btn_add1 = QPushButton('+')
-        btn_remove1 = QPushButton('-')
+        btn_add1 = QPushButton('➕')
+        btn_remove1 = QPushButton('➖')
         btn_save1 = QPushButton('💾')
         btn_add1.clicked.connect(lambda: self.add_empty_row(self.table1))
         btn_remove1.clicked.connect(lambda: self.delete_selected_row(self.table1))
@@ -118,8 +121,8 @@ class VehicleWindow(QWidget):
         self.table2 = QTableWidget() 
         table2_title = QLabel("VEHICULOS")
         table2_title.setAlignment(Qt.AlignCenter)
-        btn_add2 = QPushButton('+')
-        btn_remove2 = QPushButton('-')
+        btn_add2 = QPushButton('➕')
+        btn_remove2 = QPushButton('➖')
         btn_save2 = QPushButton('💾')
         btn_add2.clicked.connect(lambda: self.add_empty_row(self.table2))
         btn_remove2.clicked.connect(lambda: self.delete_selected_row(self.table2))
@@ -146,8 +149,6 @@ class VehicleWindow(QWidget):
 
     def load_data_from_csv(self, folder_path):
         csv_files = [f for f in os.listdir(folder_path) if f.endswith('.csv')]
-        print(folder_path)
-        print(csv_files)
     
         # Asegúrate de que hay al menos dos archivos .csv para cargar
         if len(csv_files) < 2:
@@ -158,7 +159,6 @@ class VehicleWindow(QWidget):
         
             # Carga los datos de los dos primeros archivos .csv en las tablas
             for i, file_name in enumerate(csv_files[:2]):
-                print(i)
                 file_path = os.path.join(folder_path, file_name)
                 print(f'filename: {file_name}')
                 with open(file_path, newline='', encoding='utf-8') as csvfile:
@@ -280,7 +280,8 @@ class VehicleWindow(QWidget):
                 self.text_case.setText(f"Caso cargado: {folderName}")
                 self.load_data_from_csv(self.casePath)
                 self.extraer_coordenadas(self.table1, self.casePath)
-            print(self.casePath)
+            
+
 
     def save_case(self, table1: QTableWidget = None, table2: QTableWidget = None):
         
@@ -331,10 +332,19 @@ class VehicleWindow(QWidget):
         """ruta_absoluta = os.path.abspath(folderPath + "/mapa.html")
         url = QUrl.fromLocalFile(ruta_absoluta)
         self.web_view.load(url)"""
-        self.mostrarRutas(self.casePath, [0,2,1])
+        ruta = self.casePath + '/Reports/'
+        archivos = os.listdir(ruta)
+        for archivo in archivos:
+            archivoFinal = archivo
+        mapMang = MapsManager.get_instance()
+        mapMang.case_path = self.casePath
+        self.mostrarRutas(self.casePath, self.routesW.extract_arrays_from_file())
+        self.routesW.extract_arrays_from_file
+
+        
 
     def mostrarRutas(self, folderPath, ruta):
-        self.mapsManager.dibujarRuta(folderPath + '/mapa.html' , folderPath + '/mapaRuta.html', ruta )
+        self.mapsManager.dibujarRutas(folderPath + '/mapa.html' , folderPath + '/mapaRuta.html', ruta )
         ruta_absoluta = os.path.abspath(folderPath + "/mapaRuta.html")
         url = QUrl.fromLocalFile(ruta_absoluta)
         self.web_view.load(url)
