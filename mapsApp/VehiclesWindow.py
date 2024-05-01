@@ -6,7 +6,7 @@ import csv
 from MapsManager import MapsManager
 from MessageManager import MessageManager
 from RoutesWindow import RoutesWindow
-import glob
+
 
 
 
@@ -328,18 +328,16 @@ class VehicleWindow(QWidget):
             latitud = tabla.item(fila, 0).text()  
             longitud = tabla.item(fila, 1).text()  
             coordenadas.append((float(latitud), float(longitud)))
-        self.mapsManager.crearMapaAlCargar(folderPath + '/mapa.html', coordenadas)
-        """ruta_absoluta = os.path.abspath(folderPath + "/mapa.html")
-        url = QUrl.fromLocalFile(ruta_absoluta)
-        self.web_view.load(url)"""
-        ruta = self.casePath + '/Reports/'
-        archivos = os.listdir(ruta)
-        for archivo in archivos:
-            archivoFinal = archivo
+        self.mapsManager.crearMapaAlCargar(folderPath + '/mapa.html', coordenadas)  
         mapMang = MapsManager.get_instance()
         mapMang.case_path = self.casePath
-        self.mostrarRutas(self.casePath, self.routesW.extract_arrays_from_file())
-        self.routesW.extract_arrays_from_file
+        try:
+            self.mostrarRutas(self.casePath, self.routesW.extract_arrays_from_file())
+        except:
+            ruta_absoluta = os.path.abspath(folderPath + "/mapa.html")
+            url = QUrl.fromLocalFile(ruta_absoluta)
+            self.web_view.load(url)
+        
 
         
 
@@ -348,6 +346,7 @@ class VehicleWindow(QWidget):
         ruta_absoluta = os.path.abspath(folderPath + "/mapaRuta.html")
         url = QUrl.fromLocalFile(ruta_absoluta)
         self.web_view.load(url)
+        self.routesW.update()
 
 
 

@@ -32,7 +32,7 @@ class RoutesWindow(QWidget):
         # Layout de las rutas
         rutaLayout = QHBoxLayout()
         rutaContainer = QWidget()
-        self.textoRutas = QTextEdit()
+        self.textoRutas = QTextEdit("No hay solución. Se necesita cargar un modelo")
         rutaLayout.addWidget(self.textoRutas)
 
         # Se añaden las rutas
@@ -43,9 +43,9 @@ class RoutesWindow(QWidget):
         self.layout.addWidget(mapContainer, 1)
         self.layout.addWidget(rutaContainer)
 
-
     """Lee el fichero de texto con las rutas y las convierte en arrays"""
     def extract_arrays_from_file(self):
+        self.textoRutas.append('Hola')
         maps = MapsManager.get_instance()
         ruta = maps.case_path + '/Reports/'
         archivos = os.listdir(ruta)
@@ -62,8 +62,33 @@ class RoutesWindow(QWidget):
                     # Extrae el contenido dentro de los corchetes y conviértelo a una lista de enteros
                     array = list(map(int, match.group(1).split(',')))
                     arrays.append(array)
-        #self.loadRoutes(arrays, csv_path, maps.case_path)
+
+        self.loadRoutes(arrays, csv_path, maps.case_path)
+
         return arrays
+    
+    def getArrays(self):
+        print("Get Arrays")
+        maps = MapsManager.get_instance()
+        ruta = maps.case_path + '/Reports/'
+        archivos = os.listdir(ruta)
+        for archivo in archivos:
+            path = archivo
+        file_path = ruta + path
+        csv_path = os.path.dirname(os.path.dirname(file_path)) + '/nodes.csv'
+        arrays = []
+        with open(file_path, 'r') as file:
+            for line in file:
+                # Busca líneas que contienen un patrón de array
+                match = re.search(r'\[(.*?)\]', line)
+                if match:
+                    # Extrae el contenido dentro de los corchetes y conviértelo a una lista de enteros
+                    array = list(map(int, match.group(1).split(',')))
+                    arrays.append(array)
+
+        self.loadRoutes(arrays, csv_path, maps.case_path)
+
+        
 
     def loadRoutes(self, arrays, csv_path, file_path):
         df = pd.read_csv(csv_path)
@@ -82,15 +107,12 @@ class RoutesWindow(QWidget):
         return route
     
     def actualizarVentana(self, routes, file_path):
-        try:
-            print("Actualizando rutas")
-            for route in routes:
-                self.textoRutas.append(route)
+        print("Actualizando rutas")
+        for route in routes:
+            self.textoRutas.append(route)
             
-            self.actualizaMapa(file_path)
-        except:
-            print("mapa rutas error")
-            pass
+        self.actualizaMapa(file_path)
+
 
     def actualizaMapa(self, path):
         mapa_path = path + '/mapaRuta.html'
@@ -98,4 +120,7 @@ class RoutesWindow(QWidget):
         url = QUrl.fromLocalFile(mapa_path)
         self.web_view.load(url)
         print("mapa rutas actualizado")        
+
+    def si(self):
+        self.textoRutas.append("Hola")
         

@@ -70,7 +70,16 @@ class MapWindow(QMainWindow):
         self.tab_widget.addTab(main_tab, "Mapa")
         self.tab_widget.addTab(self.vehicles_tab, "Caso")
         self.tab_widget.addTab(self.routes_tab, "Solución")
+        self.tab_widget.currentChanged.connect(self.on_tab_changed)
 
+    def on_tab_changed(self, index):
+        # Verificar si la pestaña seleccionada es la que contiene "Solución"
+        if self.tab_widget.tabText(index) == "Solución":
+            # Ejecutar el método que deseas cuando se selecciona esa pestaña
+            try:
+                self.routes_tab.getArrays()
+            except:
+                pass
     def setupMainTab(self, tab):
 
         # Layout para el mapa y botones
