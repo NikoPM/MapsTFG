@@ -10,14 +10,14 @@ import time
 """
 Definimos primero dónde buscar el modelo ya entrenado.
 """
-def cargarModelo(model_path):
+def cargarModelo(model_path, nVehiculos, nNodos, path):
 
     """
     INICIALIZACIÓN DE ENTORNO Y AGENTE
     """
-    nVehiculos = 3
-    nNodos = 7
-    env = gym.make('rl_routing:VRPEnv-v0',  nVehiculos = nVehiculos, nNodos = nNodos, maxNumVehiculos = nVehiculos, maxNumNodos = nNodos, maxNodeCapacity = 4, sameMaxNodeVehicles=False, render_mode='human', dataPath = 'mapsApp/Cases/Caso Farmacias/')
+    nVehiculos = int(nVehiculos)
+    nNodos = int(nNodos)
+    env = gym.make('rl_routing:VRPEnv-v0',  nVehiculos = nVehiculos, nNodos = nNodos, maxNumVehiculos = nVehiculos, maxNumNodos = nNodos , maxNodeCapacity = 4, sameMaxNodeVehicles=False, render_mode='human', dataPath = path)
     #env.readEnvFromFile(nVehiculos = 5, nNodos = 15, maxVehicles = 7, maxNodos = 20, dataPath = 'data/')
     env.reset()
 

@@ -28,6 +28,8 @@ def entrenarDesdeCero(algoritmo, models_dir, log_dir, iterations, timesteps, nVe
         nVehiculos = 7
     if not nNodos: 
         nNodos = 20
+
+    nNodos-=1
     print(f'{ITERATIONS, TIMESTEPS, nVehiculos, nNodos}')
 
     if not os.path.exists(models_dir):

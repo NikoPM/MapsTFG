@@ -111,7 +111,8 @@ class MapWindow(QMainWindow):
         self.txt_timesteps = QLineEdit('Timesteps (Múltiplos de 2048) (Default = 10.240)')
         self.nVehicles = QLineEdit('Vehiculos (Default = 7)')
         self.nNodos = QLineEdit('Nodos (Default = 20)')
-        self.txt_episodes = QLineEdit('episodes')
+        self.txt_nVehicles2 = QLineEdit('nVehiculos')
+        self.txt_nNodes2 = QLineEdit('nNodos')
         self.combo_options = QComboBox()
         self.combo_options.setStyleSheet("QComboBox { background-color: white; font-size: 12px; }")
         self.combo_options.addItem("Seleccione el algoritmo")
@@ -123,7 +124,7 @@ class MapWindow(QMainWindow):
         self.btn_train = QPushButton('Entrenar desde 0')
         self.btn_load_model = QPushButton('Cargar Modelo')
         self.btn_train.clicked.connect(lambda: self.train(self.txt_iteraciones.text(), self.txt_timesteps.text(), self.nVehicles.text(), self.nNodos.text()))
-        self.btn_load_model.clicked.connect(self.load_model)
+        self.btn_load_model.clicked.connect(lambda: self.load_model(self.txt_nVehicles2.text(), self.txt_nNodes2.text()))
 
         # Formato
         self.txt_iteraciones
@@ -137,8 +138,8 @@ class MapWindow(QMainWindow):
         controls_layout.addWidget(self.nVehicles)
         controls_layout.addWidget(self.nNodos)
         controls_layout.addWidget(self.btn_load_model)
-        controls_layout.addWidget(self.txt_episodes)
-
+        controls_layout.addWidget(self.txt_nNodes2)
+        controls_layout.addWidget(self.txt_nVehicles2)
         # Añade los botones al layout del mapa
         map_buttons_layout = QHBoxLayout()
         map_buttons_layout.addWidget(self.btn_load_case)
@@ -199,7 +200,7 @@ class MapWindow(QMainWindow):
         
 
 
-    def load_model(self):
+    def load_model(self, nVehicles, nNodes):
         # Define la ruta inicial para el diálogo de apertura de archivos
         initialPath = os.path.abspath("mapsApp/Cases")
         options = QFileDialog.Options()
@@ -224,7 +225,7 @@ class MapWindow(QMainWindow):
             # Define una función interna para cargar el modelo en un hilo
             def _load_model():
                 # Cargar el modelo
-                self.cargarModelo.cargarModelo(models_path)
+                self.cargarModelo.cargarModelo(models_path, nVehicles, nNodes, self.case_path)
                 # Una vez cargado, vuelve a habilitar la ventana principal
                 self.setEnabled(True)
                 # Oculta el mensaje de espera
