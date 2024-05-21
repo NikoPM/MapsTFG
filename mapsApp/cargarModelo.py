@@ -15,6 +15,7 @@ def cargarModelo(model_path, nVehiculos, nNodos, path):
     """
     INICIALIZACIÓN DE ENTORNO Y AGENTE
     """
+    path = path + "/"
     nVehiculos = int(nVehiculos)
     nNodos = int(nNodos)
     env = gym.make('rl_routing:VRPEnv-v0',  nVehiculos = nVehiculos, nNodos = nNodos, maxNumVehiculos = nVehiculos, maxNumNodos = nNodos , maxNodeCapacity = 4, sameMaxNodeVehicles=False, render_mode='human', dataPath = path)

@@ -334,6 +334,7 @@ class VehicleWindow(QWidget):
         try:
             self.mostrarRutas(self.casePath, self.routesW.extract_arrays_from_file())
         except:
+            print("No se pudo mostrar Ruta")
             ruta_absoluta = os.path.abspath(folderPath + "/mapa.html")
             url = QUrl.fromLocalFile(ruta_absoluta)
             self.web_view.load(url)
@@ -342,6 +343,7 @@ class VehicleWindow(QWidget):
         
 
     def mostrarRutas(self, folderPath, ruta):
+        print("Dibujando ruta")
         self.mapsManager.dibujarRutas(folderPath + '/mapa.html' , folderPath + '/mapaRuta.html', ruta )
         ruta_absoluta = os.path.abspath(folderPath + "/mapaRuta.html")
         url = QUrl.fromLocalFile(ruta_absoluta)

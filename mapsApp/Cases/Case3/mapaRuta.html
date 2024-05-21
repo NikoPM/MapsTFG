@@ -76,10 +76,12 @@ L.marker([41.6921541, -3.6836462]).addTo(map_5499b0ea0329795cfd0970b133c0823b).b
 L.marker([43.26271, -2.92528]).addTo(map_5499b0ea0329795cfd0970b133c0823b).bindPopup('Marcador 1: Lat: 43.26271, Lon: -2.92528');
 L.marker([42.84998, -2.67268]).addTo(map_5499b0ea0329795cfd0970b133c0823b).bindPopup('Marcador 2: Lat: 42.84998, Lon: -2.67268');
 
-var polyline0= L.polyline([[41.6921541, -3.6836462], [42.84998, -2.67268]], {color: 'red'}).addTo(map_5499b0ea0329795cfd0970b133c0823b);
-var polyline1= L.polyline([[42.84998, -2.67268], [43.26271, -2.92528]], {color: 'red'}).addTo(map_5499b0ea0329795cfd0970b133c0823b);
-var arrowDecorator0 = L.polylineDecorator(polyline0, {patterns: [{offset: 25,repeat: 50,symbol: L.Symbol.arrowHead({pixelSize: 10,polygon: false,pathOptions: {stroke: true,color: 'red'}})}]});
-arrowDecorator0.addTo(map_5499b0ea0329795cfd0970b133c0823b);
-var arrowDecorator1 = L.polylineDecorator(polyline1, {patterns: [{offset: 25,repeat: 50,symbol: L.Symbol.arrowHead({pixelSize: 10,polygon: false,pathOptions: {stroke: true,color: 'red'}})}]});
-arrowDecorator1.addTo(map_5499b0ea0329795cfd0970b133c0823b);</script>
+var polyline0_0 = L.polyline([[41.6921541, -3.6836462], [42.84998, -2.67268]], {color: 'red'}).addTo(map_5499b0ea0329795cfd0970b133c0823b);
+var arrowDecorator0_0 = L.polylineDecorator(polyline0_0, {patterns: [{offset: 25, repeat: 50, symbol: L.Symbol.arrowHead({pixelSize: 10, polygon: false, pathOptions: {stroke: true, color: 'red'}})}]}).addTo(map_5499b0ea0329795cfd0970b133c0823b);
+var polyline0_1 = L.polyline([[42.84998, -2.67268], [41.6921541, -3.6836462]], {color: 'red'}).addTo(map_5499b0ea0329795cfd0970b133c0823b);
+var arrowDecorator0_1 = L.polylineDecorator(polyline0_1, {patterns: [{offset: 25, repeat: 50, symbol: L.Symbol.arrowHead({pixelSize: 10, polygon: false, pathOptions: {stroke: true, color: 'red'}})}]}).addTo(map_5499b0ea0329795cfd0970b133c0823b);
+var polyline1_0 = L.polyline([[41.6921541, -3.6836462], [43.26271, -2.92528]], {color: 'blue'}).addTo(map_5499b0ea0329795cfd0970b133c0823b);
+var arrowDecorator1_0 = L.polylineDecorator(polyline1_0, {patterns: [{offset: 25, repeat: 50, symbol: L.Symbol.arrowHead({pixelSize: 10, polygon: false, pathOptions: {stroke: true, color: 'blue'}})}]}).addTo(map_5499b0ea0329795cfd0970b133c0823b);
+var polyline1_1 = L.polyline([[43.26271, -2.92528], [41.6921541, -3.6836462]], {color: 'blue'}).addTo(map_5499b0ea0329795cfd0970b133c0823b);
+var arrowDecorator1_1 = L.polylineDecorator(polyline1_1, {patterns: [{offset: 25, repeat: 50, symbol: L.Symbol.arrowHead({pixelSize: 10, polygon: false, pathOptions: {stroke: true, color: 'blue'}})}]}).addTo(map_5499b0ea0329795cfd0970b133c0823b);</script>
 </html>

@@ -223,17 +223,29 @@ class MapWindow(QMainWindow):
             self.messageManager.show_loading_message()
 
             # Define una función interna para cargar el modelo en un hilo
+            
             def _load_model():
                 # Cargar el modelo
+                
                 self.cargarModelo.cargarModelo(models_path, nVehicles, nNodes, self.case_path)
+                self.messageManager.hide_loading_message()
                 # Una vez cargado, vuelve a habilitar la ventana principal
                 self.setEnabled(True)
                 # Oculta el mensaje de espera
-                self.messageManager.hide_loading_message()
+                """except:
+                    self.messageManager.hide_loading_message()
+                    # Una vez cargado, vuelve a habilitar la ventana principal
+                    self.setEnabled(True)
+                    # Oculta el mensaje de espera
+                    self.messageManager.show_warning("Error")
+                    pass"""
+                
+            
 
             # Crea un hilo para cargar el modelo
             thread = threading.Thread(target=_load_model)
-            # Inicia el hilo
+
+             # Inicia el hilo
             thread.start()
 
     """Métodos para la modificación de la interfaz"""

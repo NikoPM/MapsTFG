@@ -116,10 +116,8 @@ class RoutesWindow(QWidget):
 
     def actualizaMapa(self, path):
         mapa_path = path + '/mapaRuta.html'
-        print(mapa_path)
         url = QUrl.fromLocalFile(mapa_path)
-        self.web_view.load(url)
-        print("mapa rutas actualizado")        
+        self.web_view.load(url)       
 
     def si(self):
         self.textoRutas.append("Hola")
