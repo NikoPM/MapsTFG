@@ -18,6 +18,7 @@ def cargarModelo(model_path, nVehiculos, nNodos, path):
     path = path + "/"
     nVehiculos = int(nVehiculos)
     nNodos = int(nNodos)
+    nNodos-=1
     env = gym.make('rl_routing:VRPEnv-v0',  nVehiculos = nVehiculos, nNodos = nNodos, maxNumVehiculos = nVehiculos, maxNumNodos = nNodos , maxNodeCapacity = 4, sameMaxNodeVehicles=False, render_mode='human', dataPath = path)
     #env.readEnvFromFile(nVehiculos = 5, nNodos = 15, maxVehicles = 7, maxNodos = 20, dataPath = 'data/')
     env.reset()

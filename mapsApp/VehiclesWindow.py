@@ -148,44 +148,62 @@ class VehicleWindow(QWidget):
 
 
     def load_data_from_csv(self, folder_path):
+        # Definir los nombres de los archivos .csv esperados
+        nodes_file = 'nodes.csv'
+        vehicles_file = 'vehicles.csv'
+
+        nodes_file_path = os.path.join(folder_path, nodes_file)
+        vehicles_file_path = os.path.join(folder_path, vehicles_file)
+
+        # Verificar si los archivos .csv existen y crearlos si no existen
+        if not os.path.exists(nodes_file_path):
+            with open(nodes_file_path, 'w', newline='', encoding='utf-8') as csvfile:
+                writer = csv.writer(csvfile)
+                writer.writerow(["Index", "coordenadas_X", "coordenadas_Y", "demandas", "maxDemand", "minTW", "maxTW", "Ubicación"])
+                writer.writerow([0, 0, 0, 0, 0, 0, 0, 0])
+
+        if not os.path.exists(vehicles_file_path):
+            with open(vehicles_file_path, 'w', newline='', encoding='utf-8') as csvfile:
+                writer = csv.writer(csvfile)
+                writer.writerow(["Index", "maxCapacity", "speed"])
+                writer.writerow([0, 0, 0])
+
+        # Lista de archivos .csv en la carpeta
         csv_files = [f for f in os.listdir(folder_path) if f.endswith('.csv')]
-    
+
         # Asegúrate de que hay al menos dos archivos .csv para cargar
         if len(csv_files) < 2:
             print("No se encontraron suficientes archivos .csv en la carpeta.")
             return
-        
-        else:
-        
-            # Carga los datos de los dos primeros archivos .csv en las tablas
-            for i, file_name in enumerate(csv_files[:2]):
-                file_path = os.path.join(folder_path, file_name)
-                print(f'filename: {file_name}')
-                with open(file_path, newline='', encoding='utf-8') as csvfile:
-                    reader = csv.reader(csvfile)
-                    if file_name == 'nodes.csv':
-                        table = self.table1
-                    if file_name == 'vehicles.csv':
-                        table = self.table2
-                    # Limpia la tabla antes de cargar nuevos datos
-                    table.setRowCount(0)
-                    table.setColumnCount(0)
-                    
-                    # Añade los datos a la tabla, comenzando desde la segunda columna
-                    for row_index, row in enumerate(reader):
-                        if row_index == 0:
-                            # Configura los encabezados de columna en la primera fila (excepto el primer elemento)
-                            table.setColumnCount(len(row) - 1)
-                            table.setHorizontalHeaderLabels(row[1:])  # Excluir el primer elemento (índice)
-                        else:
-                            # Añade los datos a la tabla, excluyendo la primera columna
-                            table.insertRow(table.rowCount())
-                            for column_index, cell in enumerate(row[1:], start=1):  # Excluir el primer elemento (índice)
-                                table.setItem(table.rowCount() - 1, column_index - 1, QTableWidgetItem(cell))
-                                
-                    # Cambia a mostrar la tabla y sus botones una vez cargados los datos
-                self.tablesStack.setCurrentIndex(1)
 
+        # Carga los datos de los archivos nodes.csv y vehicles.csv en las tablas
+        for file_name in [nodes_file, vehicles_file]:
+            file_path = os.path.join(folder_path, file_name)
+            print(f'filename: {file_name}')
+            with open(file_path, newline='', encoding='utf-8') as csvfile:
+                reader = csv.reader(csvfile)
+                if file_name == 'nodes.csv':
+                    table = self.table1
+                elif file_name == 'vehicles.csv':
+                    table = self.table2
+                # Limpia la tabla antes de cargar nuevos datos
+                table.setRowCount(0)
+                table.setColumnCount(0)
+
+                # Añade los datos a la tabla, comenzando desde la segunda columna
+                for row_index, row in enumerate(reader):
+                    if row_index == 0:
+                        # Configura los encabezados de columna en la primera fila (excepto el primer elemento)
+                        table.setColumnCount(len(row) - 1)
+                        table.setHorizontalHeaderLabels(row[1:])  # Excluir el primer elemento (índice)
+                    else:
+                        # Añade los datos a la tabla, excluyendo la primera columna
+                        table.insertRow(table.rowCount())
+                        for column_index, cell in enumerate(row[1:], start=1):  # Excluir el primer elemento (índice)
+                            table.setItem(table.rowCount() - 1, column_index - 1, QTableWidgetItem(cell))
+
+        # Cambia a mostrar la tabla y sus botones una vez cargados los datos
+        self.tablesStack.setCurrentIndex(1)
 
 
     def add_empty_row(self, table: QTableWidget):
@@ -338,8 +356,6 @@ class VehicleWindow(QWidget):
             ruta_absoluta = os.path.abspath(folderPath + "/mapa.html")
             url = QUrl.fromLocalFile(ruta_absoluta)
             self.web_view.load(url)
-        
-
         
 
     def mostrarRutas(self, folderPath, ruta):

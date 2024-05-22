@@ -45,7 +45,6 @@ class RoutesWindow(QWidget):
 
     """Lee el fichero de texto con las rutas y las convierte en arrays"""
     def extract_arrays_from_file(self):
-        self.textoRutas.append('Hola')
         maps = MapsManager.get_instance()
         ruta = maps.case_path + '/Reports/'
         archivos = os.listdir(ruta)
@@ -54,6 +53,8 @@ class RoutesWindow(QWidget):
         file_path = ruta + path
         csv_path = os.path.dirname(os.path.dirname(file_path)) + '/nodes.csv'
         arrays = []
+        times = []
+
         with open(file_path, 'r') as file:
             for line in file:
                 # Busca líneas que contienen un patrón de array
@@ -63,10 +64,16 @@ class RoutesWindow(QWidget):
                     array = list(map(int, match.group(1).split(',')))
                     arrays.append(array)
 
-        self.loadRoutes(arrays, csv_path, maps.case_path)
+                # Busca líneas que contienen un patrón de tiempo
+                time_match = re.search(r't:\s*([\d\.]+)\s*min', line)
+                if time_match:
+                    time = float(time_match.group(1))
+                    times.append(time)
+
+        self.loadRoutes(arrays, times, csv_path, maps.case_path)
 
         return arrays
-    
+
     def getArrays(self):
         print("Get Arrays")
         maps = MapsManager.get_instance()
@@ -77,6 +84,8 @@ class RoutesWindow(QWidget):
         file_path = ruta + path
         csv_path = os.path.dirname(os.path.dirname(file_path)) + '/nodes.csv'
         arrays = []
+        times = []
+
         with open(file_path, 'r') as file:
             for line in file:
                 # Busca líneas que contienen un patrón de array
@@ -86,39 +95,40 @@ class RoutesWindow(QWidget):
                     array = list(map(int, match.group(1).split(',')))
                     arrays.append(array)
 
-        self.loadRoutes(arrays, csv_path, maps.case_path)
+                # Busca líneas que contienen un patrón de tiempo
+                time_match = re.search(r't:\s*([\d\.]+)\s*min', line)
+                if time_match:
+                    time = float(time_match.group(1))
+                    times.append(time)
 
-        
+        self.loadRoutes(arrays, times, csv_path, maps.case_path)
 
-    def loadRoutes(self, arrays, csv_path, file_path):
+    def loadRoutes(self, arrays, times, csv_path, file_path):
         df = pd.read_csv(csv_path)
         all_routes = []
-        i = 1
-        for array in arrays:
+        for i, (array, time) in enumerate(zip(arrays, times)):
             route = self.generate_route_from_indices(df, array)
-            texto = "Ruta "+ str(i) + ": " + route 
+            texto = f"<b>Ruta {i+1}</b>: {route} - Tiempo: {time} min"
             all_routes.append(texto)
-            i +=1
         self.actualizarVentana(all_routes, file_path)
 
     def generate_route_from_indices(self, dataframe, indices):
         route_places = [dataframe.iloc[idx, -1] for idx in indices]
         route = ' -> '.join(route_places)
         return route
-    
+
     def actualizarVentana(self, routes, file_path):
         print("Actualizando rutas")
+        self.textoRutas.setText("")
         for route in routes:
-            self.textoRutas.append(route)
-            
+            self.textoRutas.append(route + "\n")
+            self.textoRutas.append("")
         self.actualizaMapa(file_path)
-
 
     def actualizaMapa(self, path):
         mapa_path = path + '/mapaRuta.html'
         url = QUrl.fromLocalFile(mapa_path)
-        self.web_view.load(url)       
+        self.web_view.load(url)
 
-    def si(self):
-        self.textoRutas.append("Hola")
+
         

@@ -205,6 +205,7 @@ class MapWindow(QMainWindow):
         initialPath = os.path.abspath("mapsApp/Cases")
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
+        options |= QFileDialog.ShowDirsOnly
         self.case_path = QFileDialog.getExistingDirectory(self, "Seleccionar Carpeta de Casos", initialPath, options=options)
         initialPath = os.path.abspath("mapsApp/Models")
         mapMang = MapsManager.get_instance()

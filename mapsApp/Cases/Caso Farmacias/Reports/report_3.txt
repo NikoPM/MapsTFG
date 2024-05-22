@@ -1,0 +1,9 @@
+############2024-05-22############
+
+Número de vehíclos utilizados: 3
+
+[0, 6, 3, 7, 0] - t: 0.03 min
+[0, 1, 0] - t: 0.01 min
+[0, 2, 4, 5, 0] - t: 0.01 min
+
+Tiempo total: 0.05 min
